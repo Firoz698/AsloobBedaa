@@ -362,76 +362,67 @@
 
         /* ============ RESPONSIVE STYLES ============ */
         @@media (max-width: 991px) {
-            .sidebar
+            .sidebar {
+                transform: translateX(-100%);
+            }
 
-        {
-            transform: translateX(-100%);
-        }
+                .sidebar.show {
+                    transform: translateX(0);
+                }
 
-        .sidebar.show {
-            transform: translateX(0);
-        }
+            .sidebar-toggle {
+                display: none;
+            }
 
-        .sidebar-toggle {
-            display: none;
-        }
+            .main-content {
+                margin-left: 0 !important;
+            }
 
-        .main-content {
-            margin-left: 0 !important;
-        }
+            .mobile-hamburger {
+                display: block;
+            }
 
-        .mobile-hamburger {
-            display: block;
-        }
+            .topbar h5 {
+                font-size: 1.1rem;
+            }
 
-        .topbar h5 {
-            font-size: 1.1rem;
-        }
-
-        .content-wrapper {
-            padding: 15px;
-        }
-
+            .content-wrapper {
+                padding: 15px;
+            }
         }
 
         @@media (max-width: 576px) {
-            .topbar
+            .topbar {
+                padding: 0 15px;
+            }
 
-        {
-            padding: 0 15px;
-        }
-
-        .topbar h5 {
-            font-size: 1rem;
-        }
+                .topbar h5 {
+                    font-size: 1rem;
+                }
 
 
 
-        .content-wrapper {
-            padding: 10px;
-        }
+            .content-wrapper {
+                padding: 10px;
+            }
 
-        footer {
-            font-size: 0.8rem;
-            padding: 15px;
-        }
-
+            footer {
+                font-size: 0.8rem;
+                padding: 15px;
+            }
         }
 
         /* Animations */
         @@keyframes slideIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .content-wrapper > * {
@@ -453,7 +444,7 @@
                 </button>
 
                 <div class="sidebar-header">
-                    <h4>AsloobBedaaDB</h4>
+                    <h4>Task Management</h4>
                     <div class="logo-container">
                         <img src="~/Logo/pngegg.png" alt="Logo">
                     </div>
