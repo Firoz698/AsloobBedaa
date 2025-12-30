@@ -11,6 +11,8 @@ using AsloobBedaa.Services;
 
 namespace AsloobBedaa.Controllers
 {
+
+
     public class ActivityLogsController : Controller
     {
         private readonly ApplicationDbContext _context;
