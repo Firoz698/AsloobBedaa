@@ -7,8 +7,8 @@
     var selectedUserRole = ViewBag.SelectedUserRole as string;
     
     int sessionUserId = Convert.ToInt32(Context.Session.GetInt32("UserId"));
-    string UserName = Convert.ToString(Context.Session.GetString("UserName"));
-
+    string tempUserName = Convert.ToString(Context.Session.GetString("UserName"));
+    string UserName = tempUserName ?? string.Empty;
     var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, UserName, "RoleMenuPermission");
 
     bool canView = permission?.CanView ?? false;

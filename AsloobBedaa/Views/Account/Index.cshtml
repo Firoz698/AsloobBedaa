@@ -3,8 +3,9 @@
 @{
     ViewData["Title"] = "User Info";
     int sessionUserId = Convert.ToInt32(Context.Session.GetInt32("UserId"));
-    string UserName = Convert.ToString(Context.Session.GetString("UserName"));
-    var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, UserName, "Account");
+    string? sessionUserName = Context.Session.GetString("UserName");
+    string userName = sessionUserName ?? string.Empty; 
+    var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, userName, "Account");
     bool canCreate = permission?.CanCreate ?? false;
 }
 

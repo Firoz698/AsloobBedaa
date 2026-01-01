@@ -4,10 +4,10 @@
     {
         public int AttendanceID { get; set; }
         public int EmployeeID { get; set; }
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
 
         public int ProjectID { get; set; }
-        public Project Project { get; set; }
+        public Project? Project { get; set; }
 
         public DateTime Date { get; set; }
         public DateTime StartTime { get; set; }

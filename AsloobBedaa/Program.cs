@@ -2,8 +2,6 @@
 using AsloobBedaa.Services;
 using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
-using AsloobBedaa.DataContext;
-using AsloobBedaa.Services;
 using AsloobBedaa.Helpers;
 
 namespace EmployeePortal
