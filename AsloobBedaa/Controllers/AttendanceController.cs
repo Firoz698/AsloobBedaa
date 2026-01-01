@@ -29,9 +29,6 @@ namespace AsloobBedaa.Controllers
                 return BadRequest("Invalid attendance data.");
             }
 
-            // Calculate total hours
-            TimeSpan duration = model.EndTime - model.StartTime;
-            model.TotalHours = (decimal)duration.TotalHours;
 
             _context.Attendances.Add(model);
             _context.SaveChanges();

@@ -17,6 +17,7 @@ namespace AsloobBedaa.DataContext
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Project> Projects { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Overtime> Overtimes { get; set; }
         public DbSet<RoleMenuPermission> RoleMenuPermissions { get; set; }
