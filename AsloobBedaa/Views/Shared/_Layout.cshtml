@@ -446,7 +446,7 @@
                 <div class="sidebar-header">
                     <h4>Asloob Bedaa</h4>
                     <div class="logo-container">
-                        <img src="~/Logo/Complay_logo.png" alt="Logo">
+                        <img src="~/Logo/menu logo.png" alt="Logo">
                     </div>
                 </div>
 
@@ -456,7 +456,7 @@
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == menu.ControllerName ? "active" : "")"
                                asp-area="" asp-controller="@menu.ControllerName" asp-action="@menu.ActionName">
-                                <i class="bi bi-circle-fill"></i>
+                                @* <i class="bi bi-circle-fill">w</i> *@
                                 <span>@menu.Title</span>
                             </a>
                         </li>
