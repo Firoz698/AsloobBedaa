@@ -1,80 +1,49 @@
-﻿@model AsloobBedaa.Models.Attendance
+﻿@model IEnumerable<AsloobBedaa.Models.Attendance>
 @{
     ViewData["Title"] = "Employee Attendance";
 }
 
 <h2 class="mb-4">Employee Attendance</h2>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="SaveAttendance" method="post">
+<div class="row mb-3">
+    <!-- Filter & Search -->
+    <div class="col-md-3">
+        <select id="projectFilter" class="form-select">
+            <option value="">-- All Projects --</option>
+            @foreach (var project in ViewBag.Projects)
+            {
+                <option value="@project.Value">@project.Text</option>
+            }
+        </select>
+    </div>
 
-            <!-- Employee -->
-            <div class="mb-3">
-                <label class="form-label">Employee</label>
-                <select asp-for="EmployeeID"
-                        class="form-control"
-                        asp-items="ViewBag.Employees"
-                        required>
-                    <option value="">-- Select Employee --</option>
-                </select>
-            </div>
+    <div class="col-md-3">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search Employee / Project" />
+    </div>
 
-            <!-- Project -->
-            <div class="mb-3">
-                <label class="form-label">Project</label>
-                <select asp-for="ProjectID"
-                        class="form-control"
-                        asp-items="ViewBag.Projects"
-                        required>
-                    <option value="">-- Select Project --</option>
-                </select>
-            </div>
-
-            <!-- Date -->
-            <div class="mb-3">
-                <label class="form-label">Date</label>
-                <input asp-for="Date" type="date" class="form-control" required />
-            </div>
-
-            <!-- Start Time -->
-            <div class="mb-3">
-                <label class="form-label">Start Time</label>
-                <input asp-for="StartTime" type="time" class="form-control" required />
-            </div>
-
-            <!-- End Time -->
-            <div class="mb-3">
-                <label class="form-label">End Time</label>
-                <input asp-for="EndTime" type="time" class="form-control" required />
-            </div>
-
-            <button type="submit" class="btn btn-primary mt-3">
-                Save Attendance
-            </button>
-        </form>
+    <div class="col-md-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAttendanceModal">
+            Add Attendance
+        </button>
     </div>
 </div>
 
-<hr />
-
-<h4 class="mt-4">Today Attendance List</h4>
-
-<table class="table table-bordered table-striped mt-2">
-    <thead class="table-dark">
-        <tr>
-            <th>Employee</th>
-            <th>Project</th>
-            <th>Date</th>
-            <th>Worked Hours</th>
-            <th>Overtime</th>
-            <th>Daily Salary</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (ViewBag.AttendanceList != null)
-        {
-            foreach (var item in ViewBag.AttendanceList)
+<!-- Attendance Table -->
+<div class="table-responsive">
+    <table class="table table-bordered table-striped" id="attendanceTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Employee</th>
+                <th>Project</th>
+                <th>Date</th>
+                <th>Worked Hours</th>
+                <th>Overtime</th>
+                <th>Daily Salary</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceBody">
+            @foreach (var item in ViewBag.AttendanceList)
             {
                 <tr>
                     <td>@item.Employee?.Name</td>
@@ -82,17 +51,133 @@
                     <td>@item.Date.ToString("dd-MMM-yyyy")</td>
                     <td>@item.WorkedHours</td>
                     <td>@item.OvertimeHours</td>
-                    <td>@item.DailySalary</td>
+                    <td>@item.DailySalary.ToString("C")</td>
+                    <td class="text-center">
+                        <a class="btn btn-sm btn-success me-1" href="#">Edit</a>
+                        <a class="btn btn-sm btn-danger" href="#">Delete</a>
+                    </td>
                 </tr>
             }
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Placeholder -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center" id="pagination">
+        <!-- JS will generate pagination -->
+    </ul>
+</nav>
+
+<!-- Add Attendance Modal -->
+<div class="modal fade" id="addAttendanceModal" tabindex="-1" aria-labelledby="addAttendanceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addAttendanceForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAttendanceLabel">Add Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Employee</label>
+                        <select id="EmployeeID" class="form-select" required>
+                            <option value="">-- Select Employee --</option>
+                            @foreach (var emp in ViewBag.Employees)
+                            {
+                                <option value="@emp.Value">@emp.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Project</label>
+                        <select id="ProjectID" class="form-select" required>
+                            <option value="">-- Select Project --</option>
+                            @foreach (var proj in ViewBag.Projects)
+                            {
+                                <option value="@proj.Value">@proj.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Date</label>
+                        <input type="date" id="Date" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Start Time</label>
+                        <input type="time" id="StartTime" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>End Time</label>
+                        <input type="time" id="EndTime" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Simple JS Filter & Search
+        const table = document.getElementById('attendanceTable');
+        const body = document.getElementById('attendanceBody');
+        const projectFilter = document.getElementById('projectFilter');
+        const searchBox = document.getElementById('searchBox');
+
+        function filterTable() {
+            const projectVal = projectFilter.value.toLowerCase();
+            const searchVal = searchBox.value.toLowerCase();
+
+            Array.from(body.rows).forEach(row => {
+                const employee = row.cells[0].innerText.toLowerCase();
+                const project = row.cells[1].innerText.toLowerCase();
+
+                if ((projectVal === '' || project.includes(projectVal)) &&
+                    (employee.includes(searchVal) || project.includes(searchVal))) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
-        else
-        {
-            <tr>
-                <td colspan="6" class="text-center text-muted">
-                    No attendance data found
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+        projectFilter.addEventListener('change', filterTable);
+        searchBox.addEventListener('keyup', filterTable);
+
+        // Add Attendance via AJAX
+        document.getElementById('addAttendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const data = {
+                EmployeeID: document.getElementById('EmployeeID').value,
+                ProjectID: document.getElementById('ProjectID').value,
+                Date: document.getElementById('Date').value,
+                StartTime: document.getElementById('StartTime').value,
+                EndTime: document.getElementById('EndTime').value
+            };
+
+            fetch('@Url.Action("SaveAttendance", "Attendance")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                location.reload();
+            })
+            .catch(err => console.error(err));
+        });
+    </script>
+}
