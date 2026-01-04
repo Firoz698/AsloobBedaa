@@ -1,0 +1,35 @@
+﻿@model IEnumerable<AsloobBedaa.Models.Project>
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<h2 class="mb-4">Projects List</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Add New Project</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Project Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Budget</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var project in Model)
+        {
+            <tr>
+                <td>@project.ProjectName</td>
+                <td>@project.StartDate.ToString("dd-MMM-yyyy")</td>
+                <td>@project.EndDate.ToString("dd-MMM-yyyy")</td>
+                <td>@project.Budget.ToString("C")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@project.ProjectID" class="btn btn-sm btn-success">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@project.ProjectID" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

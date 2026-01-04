@@ -1,0 +1,52 @@
+﻿@model AsloobBedaa.Models.Employee
+
+@{
+    ViewData["Title"] = "Create Employee";
+}
+
+<h2 class="mb-3">Create New Employee</h2>
+
+<hr />
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" placeholder="Enter employee name" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Position" class="form-label"></label>
+        <input asp-for="Position" class="form-control" placeholder="Enter position" />
+        <span asp-validation-for="Position" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="HourlyRate" class="form-label"></label>
+        <input asp-for="HourlyRate" class="form-control" placeholder="Hourly rate" />
+        <span asp-validation-for="HourlyRate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OvertimeRate" class="form-label"></label>
+        <input asp-for="OvertimeRate" class="form-control" placeholder="Overtime rate" />
+        <span asp-validation-for="OvertimeRate" class="text-danger"></span>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">
+            Save
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Back to List
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

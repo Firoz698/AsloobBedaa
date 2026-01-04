@@ -1,0 +1,66 @@
+﻿@model IEnumerable<AsloobBedaa.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employee List";
+}
+
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        + Add New Employee
+    </a>
+</p>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>SL</th>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Hourly Rate</th>
+            <th>Overtime Rate</th>
+            <th>Created At</th>
+            <th style="width:180px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    No employees found
+                </td>
+            </tr>
+        }
+        else
+        {
+            int sl = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@sl</td>
+                    <td>@item.Name</td>
+                    <td>@item.Position</td>
+                    <td>@item.HourlyRate</td>
+                    <td>@item.OvertimeRate</td>
+                    <td>@item.CreatedAt.ToString("dd-MMM-yyyy")</td>
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@item.EmployeeID"
+                           class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <a asp-action="Delete"
+                           asp-route-id="@item.EmployeeID"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure you want to delete this employee?');">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                sl++;
+            }
+        }
+    </tbody>
+</table>

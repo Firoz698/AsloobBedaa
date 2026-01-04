@@ -1,0 +1,27 @@
+﻿@model AsloobBedaa.Models.Project
+@{
+    ViewData["Title"] = "Delete Project";
+}
+
+<h2 class="mb-4 text-danger">Delete Project</h2>
+
+<h5>Are you sure you want to delete this project?</h5>
+
+<div class="mb-3">
+    <strong>Project Name:</strong> @Model.ProjectName
+</div>
+<div class="mb-3">
+    <strong>Start Date:</strong> @Model.StartDate.ToString("dd-MMM-yyyy")
+</div>
+<div class="mb-3">
+    <strong>End Date:</strong> @Model.EndDate.ToString("dd-MMM-yyyy")
+</div>
+<div class="mb-3">
+    <strong>Budget:</strong> @Model.Budget.ToString("C")
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="ProjectID" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

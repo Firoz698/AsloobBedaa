@@ -1,0 +1,98 @@
+﻿@model AsloobBedaa.Models.Attendance
+@{
+    ViewData["Title"] = "Employee Attendance";
+}
+
+<h2 class="mb-4">Employee Attendance</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="SaveAttendance" method="post">
+
+            <!-- Employee -->
+            <div class="mb-3">
+                <label class="form-label">Employee</label>
+                <select asp-for="EmployeeID"
+                        class="form-control"
+                        asp-items="ViewBag.Employees"
+                        required>
+                    <option value="">-- Select Employee --</option>
+                </select>
+            </div>
+
+            <!-- Project -->
+            <div class="mb-3">
+                <label class="form-label">Project</label>
+                <select asp-for="ProjectID"
+                        class="form-control"
+                        asp-items="ViewBag.Projects"
+                        required>
+                    <option value="">-- Select Project --</option>
+                </select>
+            </div>
+
+            <!-- Date -->
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input asp-for="Date" type="date" class="form-control" required />
+            </div>
+
+            <!-- Start Time -->
+            <div class="mb-3">
+                <label class="form-label">Start Time</label>
+                <input asp-for="StartTime" type="time" class="form-control" required />
+            </div>
+
+            <!-- End Time -->
+            <div class="mb-3">
+                <label class="form-label">End Time</label>
+                <input asp-for="EndTime" type="time" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">
+                Save Attendance
+            </button>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<h4 class="mt-4">Today Attendance List</h4>
+
+<table class="table table-bordered table-striped mt-2">
+    <thead class="table-dark">
+        <tr>
+            <th>Employee</th>
+            <th>Project</th>
+            <th>Date</th>
+            <th>Worked Hours</th>
+            <th>Overtime</th>
+            <th>Daily Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.AttendanceList != null)
+        {
+            foreach (var item in ViewBag.AttendanceList)
+            {
+                <tr>
+                    <td>@item.Employee?.Name</td>
+                    <td>@item.Project?.ProjectName</td>
+                    <td>@item.Date.ToString("dd-MMM-yyyy")</td>
+                    <td>@item.WorkedHours</td>
+                    <td>@item.OvertimeHours</td>
+                    <td>@item.DailySalary</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No attendance data found
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

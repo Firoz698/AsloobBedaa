@@ -1,6 +1,7 @@
 ﻿using AsloobBedaa.DataContext;
 using AsloobBedaa.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace AsloobBedaa.Controllers
@@ -17,8 +18,27 @@ namespace AsloobBedaa.Controllers
         // Index view
         public IActionResult Index()
         {
+            ViewBag.Employees = new SelectList(
+                _context.Employees.Where(e => !e.IsDeleted),
+                "EmployeeID",
+                "Name"
+            );
+
+            ViewBag.Projects = new SelectList(
+                _context.Projects,
+                "ProjectID",
+                "ProjectName"
+            );
+
+            ViewBag.AttendanceList = _context.Attendances
+                .Include(a => a.Employee)
+                .Include(a => a.Project)
+                .Where(a => !a.IsDeleted)
+                .ToList();
+
             return View();
         }
+
 
         // Save attendance
         [HttpPost]
