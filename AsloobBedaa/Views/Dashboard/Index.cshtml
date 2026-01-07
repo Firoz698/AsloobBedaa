@@ -1,0 +1,84 @@
+﻿@model AsloobBedaa.ViewModels.DashboardVM
+
+@{
+    ViewData["Title"] = "📊 Dashboard";
+}
+
+@* <h3 class="mb-4">📊 Dashboard Overview</h3> *@
+
+<!-- ===== TOP SUMMARY CARDS ===== -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h6>Total Employees Today</h6>
+                <h3>@Model.TotalEmployeesToday</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h6>Total Projects Today</h6>
+                <h3>@Model.TotalProjectsToday</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h6>Total Expense Today</h6>
+                <h3>@Model.TotalExpenseToday.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h6>Overtime Expense</h6>
+                <h3>@Model.TotalOvertimeExpense.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PROJECT WISE SUMMARY TABLE ===== -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        📋 Project Wise Attendance & Cost Summary (Today)
+    </div>
+
+    <div class="card-body table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-secondary">
+                <tr>
+                    <th>S.N</th>
+                    <th>Project Name</th>
+                    <th>Employees Working</th>
+                    <th>Daily Cost</th>
+                    <th>Overtime Cost</th>
+                    <th>Total Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int sn = 1;
+                }
+                @foreach (var item in Model.ProjectSummaries)
+                {
+                    <tr>
+                        <td>@sn++</td>
+                        <td>@item.ProjectName</td>
+                        <td>@item.EmployeesWorking</td>
+                        <td>@item.ProjectDailyCost.ToString("N2")</td>
+                        <td>@item.ProjectOvertimeCost.ToString("N2")</td>
+                        <td>@(item.ProjectDailyCost + item.ProjectOvertimeCost).ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
