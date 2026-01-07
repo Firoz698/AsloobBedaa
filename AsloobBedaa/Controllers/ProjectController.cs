@@ -20,10 +20,8 @@ namespace AsloobBedaa.Controllers
         // GET: Project
         public async Task<IActionResult> Index()
         {
-            var projects = await _context.Projects
-                                .AsNoTracking()
-                                .Where(p => !p.IsDeleted)
-                                .ToListAsync();
+            var projects = await _context.Projects.AsNoTracking().Where(p => !p.IsDeleted).ToListAsync();
+            //var tempdata = 
             return View(projects);
         }
 

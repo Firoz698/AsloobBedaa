@@ -301,7 +301,7 @@
 
 <div class="">
     <!-- Header -->
-    <div class="logs-header">
+@*     <div class="logs-header">
         <div class="row align-items-center">
             <div class="col-12 col-md-6 text-center text-md-start mb-3 mb-md-0">
                 <h2><i class="bi bi-clock-history"></i> @ViewData["Title"]</h2>
@@ -314,7 +314,7 @@
                 </a>
             </div>
         </div>
-    </div>
+    </div> *@
 
     @if (TempData["Error"] != null)
     {
@@ -326,7 +326,21 @@
 
     <!-- Filter Card -->
     <div class="filter-card">
-        <h5><i class="bi bi-funnel"></i> Filter Activity Logs</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="bi bi-funnel"></i> Filter Activity Logs</h5>
+            </div>
+
+            <div class="col-md-6">
+                <a href="@Url.Action("Report", new { user = ViewData["CurrentUser"], from = ViewData["From"], to = ViewData["To"] })"
+                   class="float-end btn btn-light btn-lg action-button @(Model.Any() ? "" : "disabled")">
+                    <i class="bi bi-file-earmark-pdf"></i> Download Report
+                </a>
+            </div>
+        </div>
+       
+
+
         <form method="get" class="row g-3">
             <div class="col-12 col-sm-6 col-lg-3">
                 <label class="form-label small text-muted fw-bold">User Name</label>

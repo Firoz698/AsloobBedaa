@@ -19,10 +19,7 @@ namespace AsloobBedaa.Controllers
         // GET: Employee
         public async Task<IActionResult> Index()
         {
-            var employees = await _context.Employees
-                                .AsNoTracking()
-                                .Where(e => !e.IsDeleted)
-                                .ToListAsync();
+            var employees = await _context.Employees.AsNoTracking().Where(e => !e.IsDeleted).ToListAsync();
             return View(employees);
         }
 
