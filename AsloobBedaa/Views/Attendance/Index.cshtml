@@ -1,9 +1,8 @@
-﻿@model IEnumerable<AsloobBedaa.Models.Attendance>
-@{
+﻿@{
     ViewData["Title"] = "Employee Attendance";
 }
+
 <div class="row mb-3">
-    <!-- Filter & Search -->
     <div class="col-md-3">
         <select id="projectFilter" class="form-select">
             <option value="">-- All Projects --</option>
@@ -25,7 +24,6 @@
     </div>
 </div>
 
-<!-- Attendance Table -->
 <div class="table-responsive">
     <table class="table table-bordered table-striped" id="attendanceTable">
         <thead class="table-dark">
@@ -36,7 +34,7 @@
                 <th>Worked Hours</th>
                 <th>Overtime</th>
                 <th>Daily Salary</th>
-                <th class="text-center">Actions</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id="attendanceBody">
@@ -48,10 +46,9 @@
                     <td>@item.Date.ToString("dd-MMM-yyyy")</td>
                     <td>@item.WorkedHours</td>
                     <td>@item.OvertimeHours</td>
-                    <td>@item.DailySalary.ToString("C")</td>
+                    <td>@item.DailySalary</td>
                     <td class="text-center">
-                        <a class="btn btn-sm btn-success me-1" href="#">Edit</a>
-                        <a class="btn btn-sm btn-danger" href="#">Delete</a>
+                        <button class="btn btn-sm btn-danger">Delete</button>
                     </td>
                 </tr>
             }
@@ -59,28 +56,21 @@
     </table>
 </div>
 
-<!-- Pagination Placeholder -->
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center" id="pagination">
-        <!-- JS will generate pagination -->
-    </ul>
-</nav>
-
-<!-- Add Attendance Modal -->
-<div class="modal fade" id="addAttendanceModal" tabindex="-1" aria-labelledby="addAttendanceLabel" aria-hidden="true">
+<!-- ADD ATTENDANCE MODAL -->
+<div class="modal fade" id="addAttendanceModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="addAttendanceForm">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addAttendanceLabel">Add Attendance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5>Add Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label>Employee</label>
                         <select id="EmployeeID" class="form-select" required>
-                            <option value="">-- Select Employee --</option>
+                            <option value="">Select</option>
                             @foreach (var emp in ViewBag.Employees)
                             {
                                 <option value="@emp.Value">@emp.Text</option>
@@ -88,10 +78,10 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label>Project</label>
                         <select id="ProjectID" class="form-select" required>
-                            <option value="">-- Select Project --</option>
+                            <option value="">Select</option>
                             @foreach (var proj in ViewBag.Projects)
                             {
                                 <option value="@proj.Value">@proj.Text</option>
@@ -99,25 +89,24 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label>Date</label>
                         <input type="date" id="Date" class="form-control" required />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label>Start Time</label>
                         <input type="time" id="StartTime" class="form-control" required />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label>End Time</label>
                         <input type="time" id="EndTime" class="form-control" required />
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save Attendance</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -126,55 +115,52 @@
 
 @section Scripts {
     <script>
-        // Simple JS Filter & Search
-        const table = document.getElementById('attendanceTable');
-        const body = document.getElementById('attendanceBody');
-        const projectFilter = document.getElementById('projectFilter');
-        const searchBox = document.getElementById('searchBox');
+        const body = document.getElementById("attendanceBody");
+        const projectFilter = document.getElementById("projectFilter");
+        const searchBox = document.getElementById("searchBox");
 
         function filterTable() {
-            const projectVal = projectFilter.value.toLowerCase();
-            const searchVal = searchBox.value.toLowerCase();
+            const projectText = projectFilter.options[projectFilter.selectedIndex].text.toLowerCase();
+            const search = searchBox.value.toLowerCase();
 
             Array.from(body.rows).forEach(row => {
                 const employee = row.cells[0].innerText.toLowerCase();
                 const project = row.cells[1].innerText.toLowerCase();
 
-                if ((projectVal === '' || project.includes(projectVal)) &&
-                    (employee.includes(searchVal) || project.includes(searchVal))) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                const projectMatch =
+                    projectFilter.value === "" || project.includes(projectText);
+
+                const searchMatch =
+                    employee.includes(search) || project.includes(search);
+
+                row.style.display = projectMatch && searchMatch ? "" : "none";
             });
         }
 
-        projectFilter.addEventListener('change', filterTable);
-        searchBox.addEventListener('keyup', filterTable);
+        projectFilter.addEventListener("change", filterTable);
+        searchBox.addEventListener("keyup", filterTable);
 
-        // Add Attendance via AJAX
-        document.getElementById('addAttendanceForm').addEventListener('submit', function(e) {
+        document.getElementById("addAttendanceForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
             const data = {
-                EmployeeID: document.getElementById('EmployeeID').value,
-                ProjectID: document.getElementById('ProjectID').value,
-                Date: document.getElementById('Date').value,
-                StartTime: document.getElementById('StartTime').value,
-                EndTime: document.getElementById('EndTime').value
+                EmployeeID: document.getElementById("EmployeeID").value,
+                ProjectID: document.getElementById("ProjectID").value,
+                Date: document.getElementById("Date").value,
+                StartTime: document.getElementById("StartTime").value,
+                EndTime: document.getElementById("EndTime").value
             };
 
-            fetch('@Url.Action("SaveAttendance", "Attendance")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            fetch("@Url.Action("SaveAttendance", "Attendance")", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             })
-            .then(res => res.json())
-            .then(res => {
-                alert(res.message);
+            .then(r => r.json())
+            .then(r => {
+                alert(r.message);
                 location.reload();
-            })
-            .catch(err => console.error(err));
+            });
         });
     </script>
 }
