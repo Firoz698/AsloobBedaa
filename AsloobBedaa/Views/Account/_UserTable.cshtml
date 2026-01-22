@@ -4,7 +4,7 @@
     int sessionUserId = Convert.ToInt32(Context.Session.GetInt32("UserId"));
     string ?tempUserName = Convert.ToString(Context.Session.GetString("UserName"));
     string UserName = tempUserName ?? string.Empty;
-    var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, UserName, "Expense");
+    var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, UserName, "Account");
     bool canView = permission?.CanView ?? false;
     bool canCreate = permission?.CanCreate ?? false;
     bool canEdit = permission?.CanEdit ?? false;
