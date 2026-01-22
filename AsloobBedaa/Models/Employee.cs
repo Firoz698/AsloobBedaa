@@ -7,6 +7,7 @@ namespace AsloobBedaa.Models
 {
     public class Employee : Base
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string EmployeeType { get; set; } // Basic / Hourly
 

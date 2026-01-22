@@ -2,6 +2,7 @@
 {
     public class DashboardViewModel
     {
+        public int Id { get; set; }
         public int TotalUsers { get; set; }
         public int ActiveSessions { get; set; }
         public int ReportsToday { get; set; }

@@ -4,6 +4,7 @@ namespace AsloobBedaa.Models
 {
     public class Attendance : Base
     {
+        public int Id { get; set; }
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
 

@@ -1,14 +1,17 @@
-﻿@* @model IEnumerable<AsloobBedaa.Models.Project>
+﻿@model IEnumerable<AsloobBedaa.Models.Project>
+
 @{
     ViewData["Title"] = "Projects";
 }
 
-@* <h2 class="mb-4">Projects List</h2> *@
+<h2>Projects</h2>
 
-<a asp-action="Create" class="btn btn-primary mb-3">Add New Project</a>
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New Project</a>
+</p>
 
 <table class="table table-bordered table-striped">
-    <thead class="table-dark">
+    <thead>
         <tr>
             <th>Project Name</th>
             <th>Start Date</th>
@@ -22,12 +25,12 @@
         {
             <tr>
                 <td>@project.ProjectName</td>
-                <td>@project.StartDate.ToString("dd-MMM-yyyy")</td>
-                <td>@project.EndDate.ToString("dd-MMM-yyyy")</td>
-                <td>@project.Budget.ToString("C")</td>
+                <td>@project.StartDate?.ToString("yyyy-MM-dd")</td>
+                <td>@project.EndDate?.ToString("yyyy-MM-dd")</td>
+                <td>@project.Budget?.ToString("C")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@project.ProjectID" class="btn btn-sm btn-success">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@project.ProjectID" class="btn btn-sm btn-danger">Delete</a>
+                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@project.ProjectID">Edit</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@project.ProjectID">Delete</a>
                 </td>
             </tr>
         }

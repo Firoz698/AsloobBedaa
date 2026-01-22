@@ -5,6 +5,7 @@ namespace AsloobBedaa.Models.Permission
 {
     public class RoleMenuPermission : Base
     {
+        public int Id { get; set; }
         public bool CanView { get; set; } = false;
         public bool CanCreate { get; set; } = false;
         public bool CanEdit { get; set; } = false;

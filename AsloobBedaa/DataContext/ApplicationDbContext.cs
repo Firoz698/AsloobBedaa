@@ -41,6 +41,7 @@ namespace AsloobBedaa.DataContext
             modelBuilder.Entity<DashboardKpi>().HasKey(d => d.Id);
             modelBuilder.Entity<Subcontractor>().HasKey(s => s.SubcontractorId);
             modelBuilder.Entity<AccountsTransaction>().HasKey(a => a.Id);
+            modelBuilder.Entity<Project>().HasKey(p => p.ProjectID);  // Project primary key
 
             // Attendance Unique Constraint
             modelBuilder.Entity<Attendance>()
@@ -54,15 +55,9 @@ namespace AsloobBedaa.DataContext
             modelBuilder.Entity<Shift>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Overtime>().HasQueryFilter(x => !x.IsDeleted);
 
-            // Default Active
-            modelBuilder.Entity<Project>()
-                        .Property(x => x.IsActive)
-                        .HasDefaultValue(true);
-
-            modelBuilder.Entity<Employee>()
-                        .Property(x => x.IsActive)
-                        .HasDefaultValue(true);
+            // Remove Default Active for Project (since IsActive does not exist)
         }
+
 
     }
 }

@@ -6,6 +6,7 @@ namespace AsloobBedaa.Models
 {
     public class Shift : Base
     {
+        public int Id { get; set; }
         public string ShiftName { get; set; } = string.Empty;
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
