@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
 using AsloobBedaa.Helpers;
 
-namespace EmployeePortal
+namespace AsloobBedaa
 {
     public class Program
     {
