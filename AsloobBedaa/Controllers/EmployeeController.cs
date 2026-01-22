@@ -55,41 +55,41 @@ namespace AsloobBedaa.Controllers
         }
 
         // POST: Employee/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Employee employee)
-        {
-            if (id != employee.EmployeeID) return NotFound();
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, Employee employee)
+        //{
+        //    if (id != employee.EmployeeID) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    employee.UpdatedAt = DateTime.Now;
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.EmployeeID)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(employee);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            employee.UpdatedAt = DateTime.Now;
+        //            _context.Update(employee);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!EmployeeExists(employee.EmployeeID)) return NotFound();
+        //            else throw;
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(employee);
+        //}
 
         // GET: Employee/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null) return NotFound();
 
-            var employee = await _context.Employees
-                                .FirstOrDefaultAsync(e => e.EmployeeID == id && !e.IsDeleted);
-            if (employee == null) return NotFound();
+        //    var employee = await _context.Employees
+        //                        .FirstOrDefaultAsync(e => e.EmployeeID == id && !e.IsDeleted);
+        //    if (employee == null) return NotFound();
 
-            return View(employee);
-        }
+        //    return View(employee);
+        //}
 
         // POST: Employee/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -107,9 +107,9 @@ namespace AsloobBedaa.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.EmployeeID == id && !e.IsDeleted);
-        }
+        //private bool EmployeeExists(int id)
+        //{
+        //    return _context.Employees.Any(e => e.EmployeeID == id && !e.IsDeleted);
+        //}
     }
 }

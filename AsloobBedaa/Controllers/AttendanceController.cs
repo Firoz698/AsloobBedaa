@@ -15,48 +15,48 @@ namespace AsloobBedaa.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            ViewBag.Employees = new SelectList(
-                _context.Employees.Where(e => !e.IsDeleted).ToList(),
-                "EmployeeID",
-                "Name"
-            );
+        //public IActionResult Index()
+        //{
+        //    ViewBag.Employees = new SelectList(
+        //        _context.Employees.Where(e => !e.IsDeleted).ToList(),
+        //        "EmployeeID",
+        //        "Name"
+        //    );
 
-            ViewBag.Projects = new SelectList(
-                _context.Projects.Where(p => !p.IsDeleted).ToList(),
-                "ProjectID",
-                "ProjectName"
-            );
+        //    ViewBag.Projects = new SelectList(
+        //        _context.Projects.Where(p => !p.IsDeleted).ToList(),
+        //        "ProjectID",
+        //        "ProjectName"
+        //    );
 
-            ViewBag.AttendanceList = _context.Attendances
-                .Include(a => a.Employee)
-                .Include(a => a.Project)
-                .Where(a => !a.IsDeleted)
-                .OrderByDescending(a => a.Date)
-                .ToList();
+        //    ViewBag.AttendanceList = _context.Attendances
+        //        .Include(a => a.Employee)
+        //        .Include(a => a.Project)
+        //        .Where(a => !a.IsDeleted)
+        //        .OrderByDescending(a => a.Date)
+        //        .ToList();
 
-            return View();
-        }
+        //    return View();
+        //}
 
-        [HttpPost]
-        public IActionResult SaveAttendance([FromBody] Attendance model)
-        {
-            if (model == null)
-                return BadRequest(new { message = "Invalid data" });
+        //[HttpPost]
+        //public IActionResult SaveAttendance([FromBody] Attendance model)
+        //{
+        //    if (model == null)
+        //        return BadRequest(new { message = "Invalid data" });
 
-            var employee = _context.Employees.Find(model.EmployeeID);
-            if (employee == null)
-                return BadRequest(new { message = "Employee not found" });
+        //    var employee = _context.Employees.Find(model.EmployeeID);
+        //    if (employee == null)
+        //        return BadRequest(new { message = "Employee not found" });
 
-            model.CalculateSalary(employee.HourlyRate, employee.OvertimeRate);
-            model.CreatedAt = DateTime.Now;
+        //    model.CalculateSalary(employee.HourlyRate, employee.OvertimeRate);
+        //    model.CreatedAt = DateTime.Now;
 
-            _context.Attendances.Add(model);
-            _context.SaveChanges();
+        //    _context.Attendances.Add(model);
+        //    _context.SaveChanges();
 
-            return Ok(new { message = "Attendance saved successfully" });
-        }
+        //    return Ok(new { message = "Attendance saved successfully" });
+        //}
 
         [HttpPost]
         public IActionResult DeleteAttendance(int id)
