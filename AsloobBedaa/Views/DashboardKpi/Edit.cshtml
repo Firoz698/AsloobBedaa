@@ -1,0 +1,39 @@
+﻿@model DashboardKpi
+
+@{
+    ViewData["Title"] = "Edit KPI";
+}
+
+<h2>Edit KPI</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>KPI Name</label>
+        <input asp-for="KpiName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Current Month</label>
+        <input asp-for="CurrentMonth" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Previous Month</label>
+        <input asp-for="PreviousMonth" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Year To Date</label>
+        <input asp-for="YearToDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

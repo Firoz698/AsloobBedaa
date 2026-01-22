@@ -1,0 +1,24 @@
+﻿@model FinalSettlement
+
+@{
+    ViewData["Title"] = "Settlement Details";
+}
+
+<h2>Settlement Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Employee Name</th><td>@Model.EmployeeName</td></tr>
+    <tr><th>Employee ID</th><td>@Model.EmployeeId</td></tr>
+    <tr><th>Project Name</th><td>@Model.ProjectName</td></tr>
+    <tr><th>Last Working Day</th><td>@Model.LastWorkingDay.ToShortDateString()</td></tr>
+    <tr><th>Pending Salary</th><td>@Model.PendingSalary</td></tr>
+    <tr><th>Leave Salary</th><td>@Model.LeaveSalary</td></tr>
+    <tr><th>Gratuity</th><td>@Model.Gratuity</td></tr>
+    <tr><th>Deductions</th><td>@Model.Deductions</td></tr>
+    <tr><th>Net Settlement</th><td>@Model.NetSettlementAmount</td></tr>
+    <tr><th>Payment Status</th><td>@Model.PaymentStatus</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.SettlementId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

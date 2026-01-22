@@ -1,0 +1,56 @@
+﻿@model Subcontractor
+
+@{
+    ViewData["Title"] = "Create Subcontractor";
+}
+
+<h2>Create Subcontractor</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Name</label>
+        <input asp-for="SubcontractorName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Project</label>
+        <input asp-for="ProjectName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Contract Value</label>
+        <input asp-for="ContractValue" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Monthly Billing</label>
+        <input asp-for="MonthlyBilling" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Paid Amount</label>
+        <input asp-for="PaidAmount" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Retention Amount</label>
+        <input asp-for="RetentionAmount" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Status</label>
+        <select asp-for="Status" class="form-select">
+            <option>Active</option>
+            <option>Completed</option>
+            <option>On Hold</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

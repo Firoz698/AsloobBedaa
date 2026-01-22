@@ -1,0 +1,23 @@
+﻿@model Subcontractor
+
+@{
+    ViewData["Title"] = "Delete Subcontractor";
+}
+
+<h2 class="text-danger">Delete Confirmation</h2>
+
+<div class="alert alert-warning">
+    Are you sure you want to delete this subcontractor?
+</div>
+
+<table class="table table-bordered">
+    <tr><th>Name</th><td>@Model.SubcontractorName</td></tr>
+    <tr><th>Project</th><td>@Model.ProjectName</td></tr>
+    <tr><th>Outstanding</th><td>@Model.OutstandingBalance</td></tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="SubcontractorId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PayrollMonthly>
+
+@{
+    ViewData["Title"] = "Payroll Monthly";
+}
+
+<h2 class="mb-3">Monthly Payrolls</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Payroll</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Month</th>
+            <th>Project</th>
+            <th>No. of Employees</th>
+            <th>Basic Salary</th>
+            <th>Overtime</th>
+            <th>Allowances</th>
+            <th>Deductions</th>
+            <th>Net Payroll</th>
+            <th>WPS Status</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Month</td>
+                <td>@item.ProjectName</td>
+                <td>@item.NumberOfEmployees</td>
+                <td>@item.BasicSalary</td>
+                <td>@item.Overtime</td>
+                <td>@item.Allowances</td>
+                <td>@item.Deductions</td>
+                <td>@item.NetPayrollCost</td>
+                <td>
+                    <span class="badge @(item.WpsStatus == "Submitted" ? "bg-success" : "bg-warning")">
+                        @item.WpsStatus
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PayrollId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.PayrollId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.PayrollId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -24,12 +24,37 @@ namespace AsloobBedaa.Controllers
         {
             var name = HttpContext.Session.GetString("UserName");
             ViewBag.UserName = name;
-            var recentLogs = await _context.ActivityLogs
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(5)
-                .ToListAsync();
-            ViewBag.RecentLogs = recentLogs;
-            return View();
+
+            // Dashboard KPI list
+            var dashboardKpis = await _context.DashboardKpis.ToListAsync();
+
+            // Active Projects
+            ViewBag.ActiveProjects = await _context.Subcontractors
+                                             .Where(s => s.Status == "Active")
+                                             .CountAsync();
+
+            // Monthly Payroll - client-side evaluation to avoid EF Core ToString() issue
+            var currentMonthString = DateTime.Now.ToString("MMM-yyyy");
+            ViewBag.MonthlyPayroll = _context.PayrollMonthlies
+                                      .AsEnumerable()  // brings data to memory
+                                      .Where(p => p.Month == currentMonthString)
+                                      .Sum(p => p.NetPayrollCost);
+
+            // Accounts Receivable & Payable
+            ViewBag.AccountsReceivable = await _context.AccountsTransactions
+                                                .Where(a => a.Type == "AR")
+                                                .SumAsync(a => a.BalanceAmount);
+
+            ViewBag.AccountsPayable = await _context.AccountsTransactions
+                                                .Where(a => a.Type == "AP")
+                                                .SumAsync(a => a.BalanceAmount);
+
+            // Pending Final Settlements
+            ViewBag.PendingSettlements = await _context.FinalSettlements
+                                               .Where(f => f.PaymentStatus != "Paid")
+                                               .CountAsync();
+
+            return View(dashboardKpis);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

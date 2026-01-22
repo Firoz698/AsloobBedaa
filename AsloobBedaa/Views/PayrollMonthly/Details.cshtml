@@ -1,0 +1,24 @@
+﻿@model PayrollMonthly
+
+@{
+    ViewData["Title"] = "Payroll Details";
+}
+
+<h2>Payroll Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Month</th><td>@Model.Month</td></tr>
+    <tr><th>Project</th><td>@Model.ProjectName</td></tr>
+    <tr><th>No. of Employees</th><td>@Model.NumberOfEmployees</td></tr>
+    <tr><th>Basic Salary</th><td>@Model.BasicSalary</td></tr>
+    <tr><th>Overtime</th><td>@Model.Overtime</td></tr>
+    <tr><th>Allowances</th><td>@Model.Allowances</td></tr>
+    <tr><th>Deductions</th><td>@Model.Deductions</td></tr>
+    <tr><th>Net Payroll</th><td>@Model.NetPayrollCost</td></tr>
+    <tr><th>WPS Status</th><td>@Model.WpsStatus</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+    <tr><th>Created Date</th><td>@Model.CreatedDate</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.PayrollId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

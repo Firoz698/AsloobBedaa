@@ -1,0 +1,62 @@
+﻿@model PayrollMonthly
+
+@{
+    ViewData["Title"] = "Edit Payroll";
+}
+
+<h2>Edit Monthly Payroll</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="PayrollId" />
+
+    <div class="mb-3">
+        <label>Month</label>
+        <input asp-for="Month" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Project Name</label>
+        <input asp-for="ProjectName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>No. of Employees</label>
+        <input asp-for="NumberOfEmployees" class="form-control" type="number" />
+    </div>
+
+    <div class="mb-3">
+        <label>Basic Salary</label>
+        <input asp-for="BasicSalary" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Overtime</label>
+        <input asp-for="Overtime" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Allowances</label>
+        <input asp-for="Allowances" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Deductions</label>
+        <input asp-for="Deductions" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>WPS Status</label>
+        <select asp-for="WpsStatus" class="form-select">
+            <option>Submitted</option>
+            <option>Pending</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

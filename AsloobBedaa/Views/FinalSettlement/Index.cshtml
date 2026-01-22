@@ -1,0 +1,53 @@
+﻿@model IEnumerable<FinalSettlement>
+
+@{
+    ViewData["Title"] = "Final Settlements";
+}
+
+<h2 class="mb-3">Final Settlements</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Settlement</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Employee Name</th>
+            <th>Employee ID</th>
+            <th>Project</th>
+            <th>Last Working Day</th>
+            <th>Pending Salary</th>
+            <th>Leave Salary</th>
+            <th>Gratuity</th>
+            <th>Deductions</th>
+            <th>Net Settlement</th>
+            <th>Payment Status</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EmployeeName</td>
+                <td>@item.EmployeeId</td>
+                <td>@item.ProjectName</td>
+                <td>@item.LastWorkingDay.ToShortDateString()</td>
+                <td>@item.PendingSalary</td>
+                <td>@item.LeaveSalary</td>
+                <td>@item.Gratuity</td>
+                <td>@item.Deductions</td>
+                <td>@item.NetSettlementAmount</td>
+                <td>
+                    <span class="badge @(item.PaymentStatus == "Paid" ? "bg-success" : "bg-warning")">
+                        @item.PaymentStatus
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SettlementId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.SettlementId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.SettlementId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

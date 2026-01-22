@@ -1,0 +1,24 @@
+﻿@model AccountsTransaction
+
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+
+<h2>Transaction Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Type</th><td>@Model.Type</td></tr>
+    <tr><th>Client / Vendor</th><td>@Model.ClientOrVendorName</td></tr>
+    <tr><th>Invoice No</th><td>@Model.InvoiceNo</td></tr>
+    <tr><th>Invoice Date</th><td>@Model.InvoiceDate.ToShortDateString()</td></tr>
+    <tr><th>Invoice Amount</th><td>@Model.InvoiceAmount</td></tr>
+    <tr><th>Paid Amount</th><td>@Model.PaidAmount</td></tr>
+    <tr><th>Balance Amount</th><td>@Model.BalanceAmount</td></tr>
+    <tr><th>Due Date</th><td>@Model.DueDate.ToShortDateString()</td></tr>
+    <tr><th>Aging Days</th><td>@Model.AgingDays</td></tr>
+    <tr><th>Status</th><td>@Model.Status</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

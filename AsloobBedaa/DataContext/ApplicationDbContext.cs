@@ -11,8 +11,14 @@ namespace AsloobBedaa.DataContext
         {
         }
 
-        // ===== Existing DbSets (UNCHANGED) =====
+        // ===== Existing DbSets =====
         public DbSet<User>? Users { get; set; }
+        public DbSet<DashboardKpi>? DashboardKpis { get; set; }
+        public DbSet<Subcontractor>? Subcontractors { get; set; }
+        public DbSet<AccountsTransaction>? AccountsTransactions { get; set; }
+        public DbSet<PayrollMonthly> PayrollMonthlies { get; set; }
+        public DbSet<FinalSettlement> FinalSettlements { get; set; }
+
         public DbSet<ActivityLog>? ActivityLogs { get; set; }
         public DbSet<Menu>? Menus { get; set; }
         public DbSet<Role>? Roles { get; set; }
@@ -29,26 +35,34 @@ namespace AsloobBedaa.DataContext
         {
             base.OnModelCreating(modelBuilder);
 
-            // ===== Attendance Unique Constraint =====
-            modelBuilder.Entity<Attendance>()
-                .HasIndex(a => new { a.EmployeeId, a.AttendanceDate, a.ShiftId })
-                .IsUnique();
+            // Explicit Primary Keys
+            modelBuilder.Entity<FinalSettlement>().HasKey(f => f.SettlementId);
+            modelBuilder.Entity<PayrollMonthly>().HasKey(p => p.PayrollId);
+            modelBuilder.Entity<DashboardKpi>().HasKey(d => d.Id);
+            modelBuilder.Entity<Subcontractor>().HasKey(s => s.SubcontractorId);
+            modelBuilder.Entity<AccountsTransaction>().HasKey(a => a.Id);
 
-            // ===== Global Soft Delete Filter (Base class) =====
+            // Attendance Unique Constraint
+            modelBuilder.Entity<Attendance>()
+                        .HasIndex(a => new { a.EmployeeId, a.AttendanceDate, a.ShiftId })
+                        .IsUnique();
+
+            // Soft Delete Filters
             modelBuilder.Entity<Project>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Employee>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Attendance>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Shift>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Overtime>().HasQueryFilter(x => !x.IsDeleted);
 
-            // ===== Optional: Default Active =====
+            // Default Active
             modelBuilder.Entity<Project>()
-                .Property(x => x.IsActive)
-                .HasDefaultValue(true);
+                        .Property(x => x.IsActive)
+                        .HasDefaultValue(true);
 
             modelBuilder.Entity<Employee>()
-                .Property(x => x.IsActive)
-                .HasDefaultValue(true);
+                        .Property(x => x.IsActive)
+                        .HasDefaultValue(true);
         }
+
     }
 }

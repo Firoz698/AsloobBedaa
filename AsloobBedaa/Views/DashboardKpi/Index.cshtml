@@ -1,0 +1,47 @@
+﻿@model IEnumerable<DashboardKpi>
+
+@{
+    ViewData["Title"] = "Dashboard KPI";
+}
+
+<h2 class="mb-3">Dashboard KPI</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add New KPI</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>KPI</th>
+            <th>Current Month</th>
+            <th>Previous Month</th>
+            <th>YTD</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.KpiName</td>
+                <td>@item.CurrentMonth</td>
+                <td>@item.PreviousMonth</td>
+                <td>@item.YearToDate</td>
+                <td>
+                    <span class="badge
+                        @(item.Status == "Increase" ? "bg-success" :
+                                                item.Status == "Decrease" ? "bg-danger" : "bg-secondary")">
+                    @item.Status
+                </span>
+            </td>
+            <td>@item.Remarks</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>

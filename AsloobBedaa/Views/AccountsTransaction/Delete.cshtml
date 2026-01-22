@@ -1,0 +1,24 @@
+﻿@model AccountsTransaction
+
+@{
+    ViewData["Title"] = "Delete Transaction";
+}
+
+<h2 class="text-danger">Delete Confirmation</h2>
+
+<div class="alert alert-warning">
+    Are you sure you want to delete this transaction?
+</div>
+
+<table class="table table-bordered">
+    <tr><th>Type</th><td>@Model.Type</td></tr>
+    <tr><th>Client / Vendor</th><td>@Model.ClientOrVendorName</td></tr>
+    <tr><th>Invoice No</th><td>@Model.InvoiceNo</td></tr>
+    <tr><th>Balance</th><td>@Model.BalanceAmount</td></tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

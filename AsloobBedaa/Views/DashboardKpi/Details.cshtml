@@ -1,0 +1,20 @@
+﻿@model DashboardKpi
+
+@{
+    ViewData["Title"] = "KPI Details";
+}
+
+<h2>KPI Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>KPI Name</th><td>@Model.KpiName</td></tr>
+    <tr><th>Current Month</th><td>@Model.CurrentMonth</td></tr>
+    <tr><th>Previous Month</th><td>@Model.PreviousMonth</td></tr>
+    <tr><th>YTD</th><td>@Model.YearToDate</td></tr>
+    <tr><th>Status</th><td>@Model.Status</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+    <tr><th>Created Date</th><td>@Model.CreatedDate</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

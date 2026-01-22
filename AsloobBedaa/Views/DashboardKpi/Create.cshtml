@@ -1,0 +1,37 @@
+﻿@model DashboardKpi
+
+@{
+    ViewData["Title"] = "Create KPI";
+}
+
+<h2>Create KPI</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">KPI Name</label>
+        <input asp-for="KpiName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Current Month</label>
+        <input asp-for="CurrentMonth" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Previous Month</label>
+        <input asp-for="PreviousMonth" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Year To Date</label>
+        <input asp-for="YearToDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

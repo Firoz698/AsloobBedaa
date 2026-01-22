@@ -1,0 +1,23 @@
+﻿@model Subcontractor
+
+@{
+    ViewData["Title"] = "Subcontractor Details";
+}
+
+<h2>Subcontractor Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Name</th><td>@Model.SubcontractorName</td></tr>
+    <tr><th>Project</th><td>@Model.ProjectName</td></tr>
+    <tr><th>Contract Value</th><td>@Model.ContractValue</td></tr>
+    <tr><th>Monthly Billing</th><td>@Model.MonthlyBilling</td></tr>
+    <tr><th>Paid Amount</th><td>@Model.PaidAmount</td></tr>
+    <tr><th>Outstanding</th><td>@Model.OutstandingBalance</td></tr>
+    <tr><th>Retention</th><td>@Model.RetentionAmount</td></tr>
+    <tr><th>Status</th><td>@Model.Status</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+    <tr><th>Created Date</th><td>@Model.CreatedDate</td></tr>
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.SubcontractorId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

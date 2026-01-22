@@ -1,0 +1,65 @@
+﻿@model FinalSettlement
+
+@{
+    ViewData["Title"] = "Create Settlement";
+}
+
+<h2>Create Final Settlement</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Employee Name</label>
+        <input asp-for="EmployeeName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Employee ID</label>
+        <input asp-for="EmployeeId" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Project Name</label>
+        <input asp-for="ProjectName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Last Working Day</label>
+        <input asp-for="LastWorkingDay" class="form-control" type="date" />
+    </div>
+
+    <div class="mb-3">
+        <label>Pending Salary</label>
+        <input asp-for="PendingSalary" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Leave Salary</label>
+        <input asp-for="LeaveSalary" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Gratuity</label>
+        <input asp-for="Gratuity" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Deductions</label>
+        <input asp-for="Deductions" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="mb-3">
+        <label>Payment Status</label>
+        <select asp-for="PaymentStatus" class="form-select">
+            <option>Paid</option>
+            <option>Pending</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

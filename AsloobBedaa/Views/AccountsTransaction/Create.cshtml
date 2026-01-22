@@ -1,0 +1,55 @@
+﻿@model AccountsTransaction
+
+@{
+    ViewData["Title"] = "Create Transaction";
+}
+
+<h2>Create Accounts Transaction</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Type</label>
+        <select asp-for="Type" class="form-select">
+            <option>AR</option>
+            <option>AP</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Client / Vendor</label>
+        <input asp-for="ClientOrVendorName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Invoice No</label>
+        <input asp-for="InvoiceNo" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Invoice Date</label>
+        <input asp-for="InvoiceDate" class="form-control" type="date" />
+    </div>
+
+    <div class="mb-3">
+        <label>Invoice Amount</label>
+        <input asp-for="InvoiceAmount" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Paid Amount</label>
+        <input asp-for="PaidAmount" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Due Date</label>
+        <input asp-for="DueDate" class="form-control" type="date" />
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

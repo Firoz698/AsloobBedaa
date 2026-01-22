@@ -1,0 +1,55 @@
+﻿@model IEnumerable<AccountsTransaction>
+
+@{
+    ViewData["Title"] = "Accounts Transactions";
+}
+
+<h2 class="mb-3">Accounts Transactions</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Transaction</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Type</th>
+            <th>Client / Vendor</th>
+            <th>Invoice No</th>
+            <th>Invoice Date</th>
+            <th>Invoice Amount</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Due Date</th>
+            <th>Aging Days</th>
+            <th>Status</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Type</td>
+                <td>@item.ClientOrVendorName</td>
+                <td>@item.InvoiceNo</td>
+                <td>@item.InvoiceDate.ToShortDateString()</td>
+                <td>@item.InvoiceAmount</td>
+                <td>@item.PaidAmount</td>
+                <td>@item.BalanceAmount</td>
+                <td>@item.DueDate.ToShortDateString()</td>
+                <td>@item.AgingDays</td>
+                <td>
+                    <span class="badge
+                        @(item.Status == "Paid" ? "bg-success" :
+                                                item.Status == "Partial" ? "bg-warning" : "bg-danger")">
+                    @item.Status
+                </span>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>

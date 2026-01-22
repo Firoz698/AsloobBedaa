@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Subcontractor>
+
+@{
+    ViewData["Title"] = "Subcontractors";
+}
+
+<h2 class="mb-3">Subcontractors</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Subcontractor</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Project</th>
+            <th>Contract Value</th>
+            <th>Paid</th>
+            <th>Outstanding</th>
+            <th>Status</th>
+            <th width="180">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.SubcontractorName</td>
+                <td>@item.ProjectName</td>
+                <td>@item.ContractValue</td>
+                <td>@item.PaidAmount</td>
+                <td>@item.OutstandingBalance</td>
+                <td>
+                    <span class="badge
+                        @(item.Status == "Active" ? "bg-success" :
+                                                item.Status == "Completed" ? "bg-primary" : "bg-warning")">
+                    @item.Status
+                </span>
+            </td>
+            <td style="padding:.5rem .3rem">
+                <a asp-action="Edit" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>
