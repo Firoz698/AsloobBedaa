@@ -22,57 +22,36 @@ namespace AsloobBedaa.Controllers
         public async Task<IActionResult> Index(int? userId)
         {
             var currentUser = HttpContext.Session.GetString("UserName") ?? "Unknown";
-            ViewBag.Users = await _context.Users
-                .Where(u => !u.IsDeleted && u.IsActive)
-                .Select(u => new { u.Id, u.UserName, u.RoleId })
-                .ToListAsync();
+            ViewBag.Users = await _context.Users.Where(u => !u.IsDeleted && u.IsActive).Select(u => new { u.Id, u.UserName, u.RoleId }).ToListAsync();
 
             if (userId == null)
             {
                 ViewBag.SelectedUserId = null;
                 ViewBag.SelectedUserRole = null;
 
-                await _activityLogger.LogAsync(
-                    currentUser,
-                    "View RoleMenuPermission",
-                    $"User '{currentUser}' viewed RoleMenuPermission page without selecting a user."
-                );
+                await _activityLogger.LogAsync(currentUser,"View RoleMenuPermission", $"User '{currentUser}' viewed RoleMenuPermission page without selecting a user.");
 
                 return View(new List<RoleMenuPermission>());
             }
 
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted && u.IsActive);
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted && u.IsActive);
 
             if (user == null)
             {
                 ViewBag.SelectedUserId = userId;
                 ViewBag.SelectedUserRole = "Not Found";
-                await _activityLogger.LogAsync(
-                    currentUser,
-                    "View RoleMenuPermission",
-                    $"User '{currentUser}' tried to view permissions for non-existing user ID: {userId}."
-                );
+                await _activityLogger.LogAsync(currentUser,"View RoleMenuPermission", $"User '{currentUser}' tried to view permissions for non-existing user ID: {userId}.");
 
                 return View(new List<RoleMenuPermission>());
             }
 
-            var permissions = await _context.RoleMenuPermissions
-                .Include(rmp => rmp.Menu)
-                .Include(rmp => rmp.Role)
-                .Where(rmp => rmp.RoleId == user.RoleId && !rmp.IsDeleted && rmp.IsActive)
-                .OrderBy(rmp => rmp.Menu.Title)
-                .ToListAsync();
+            var permissions = await _context.RoleMenuPermissions.Include(rmp => rmp.Menu).Include(rmp => rmp.Role).Where(rmp => rmp.RoleId == user.RoleId && !rmp.IsDeleted && rmp.IsActive)
+                .OrderBy(rmp => rmp.Menu.Title).ToListAsync();
 
             ViewBag.SelectedUserId = userId;
             ViewBag.SelectedUserRole = user.Role?.Name ?? "No Role";
 
-            await _activityLogger.LogAsync(
-                currentUser,
-                "View RoleMenuPermission",
-                $"User '{currentUser}' viewed permissions for user '{user.UserName}' (Role: '{user.Role?.Name ?? "No Role"}')."
-            );
+            await _activityLogger.LogAsync(currentUser, "View RoleMenuPermission", $"User '{currentUser}' viewed permissions for user '{user.UserName}' (Role: '{user.Role?.Name ?? "No Role"}')." );
 
             return View(permissions);
         }
