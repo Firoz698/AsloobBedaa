@@ -77,11 +77,7 @@ namespace AsloobBedaa.Controllers
             if (user == null)
             {
                 TempData["Error"] = "User not found!";
-                await _activityLogger.LogAsync(
-                    currentUser,
-                    "Update RoleMenuPermission",
-                    $"User '{currentUser}' attempted to update permissions for non-existing user ID: {userId}."
-                );
+                await _activityLogger.LogAsync(currentUser, "Update RoleMenuPermission", $"User '{currentUser}' attempted to update permissions for non-existing user ID: {userId}.");
                 return RedirectToAction("Index");
             }
 

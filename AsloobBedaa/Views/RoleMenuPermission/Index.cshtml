@@ -104,42 +104,31 @@
                                             <input type="hidden" name="Permissions[@i].RoleId" value="@item.RoleId" />
                                             <input type="hidden" name="Permissions[@i].MenuId" value="@item.MenuId" />
                                         </td>
+
                                         <td class="text-center">
                                             <div class="form-check d-inline-block">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       name="Permissions[@i].CanView" 
-                                                       value="true" 
-                                                       @(item.CanView ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
+<input type="checkbox" class="form-check-input" name="Permissions[@i].CanView"  value="true"   @(item.CanView ? "checked" : "") @(!canEdit ? "disabled" : "") />
                                             </div>
                                         </td>
+
                                         <td class="text-center">
                                             <div class="form-check d-inline-block">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       name="Permissions[@i].CanCreate" 
-                                                       value="true" 
-                                                       @(item.CanCreate ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
+<input type="checkbox" class="form-check-input" name="Permissions[@i].CanCreate" value="true" @(item.CanCreate ? "checked" : "") @(!canEdit ? "disabled" : "") />
                                             </div>
                                         </td>
+
                                         <td class="text-center">
                                             <div class="form-check d-inline-block">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       name="Permissions[@i].CanEdit" 
-                                                       value="true" 
-                                                       @(item.CanEdit ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
+<input type="checkbox" class="form-check-input" name="Permissions[@i].CanEdit" value="true" @(item.CanEdit ? "checked" : "") @(!canEdit ? "disabled" : "") />
                                             </div>
                                         </td>
+
                                         <td class="text-center">
                                             <div class="form-check d-inline-block">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       name="Permissions[@i].CanDelete" 
-                                                       value="true" 
-                                                       @(item.CanDelete ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
+<input type="checkbox" class="form-check-input" name="Permissions[@i].CanDelete" value="true" @(item.CanDelete ? "checked" : "") @(!canEdit ? "disabled" : "") />
                                             </div>
                                         </td>
+
                                     </tr>
                                 }
                             </tbody>
@@ -164,58 +153,26 @@
                                     <div class="row g-3">
                                         <div class="col-6">
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       role="switch"
-                                                       id="view_@i"
-                                                       name="Permissions[@i].CanView" 
-                                                       value="true" 
-                                                       @(item.CanView ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
-                                                <label class="form-check-label" for="view_@i">
-                                                    <i class="bi bi-eye text-primary"></i> Can View
-                                                </label>
+<input type="checkbox" class="form-check-input" role="switch" id="view_@i" name="Permissions[@i].CanView" value="true" @(item.CanView ? "checked" : "")@(!canEdit ? "disabled" : "")/>
+                         <label class="form-check-label" for="view_@i"><i class="bi bi-eye text-primary"></i> Can View</label>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       role="switch"
-                                                       id="create_@i"
-                                                       name="Permissions[@i].CanCreate" 
-                                                       value="true" 
-                                                       @(item.CanCreate ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
-                                                <label class="form-check-label" for="create_@i">
-                                                    <i class="bi bi-plus-circle text-success"></i> Can Create
-                                                </label>
+<input type="checkbox" class="form-check-input" role="switch" id="create_@i"name="Permissions[@i].CanCreate" value="true" @(item.CanCreate ? "checked" : "")@(!canEdit ? "disabled" : "")/>
+                         <label class="form-check-label" for="create_@i"><i class="bi bi-plus-circle text-success"></i> Can Create</label>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       role="switch"
-                                                       id="edit_@i"
-                                                       name="Permissions[@i].CanEdit" 
-                                                       value="true" 
-                                                       @(item.CanEdit ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
-                                                <label class="form-check-label" for="edit_@i">
-                                                    <i class="bi bi-pencil text-warning"></i> Can Edit
-                                                </label>
+<input type="checkbox" class="form-check-input" role="switch" id="edit_@i" name="Permissions[@i].CanEdit" value="true" @(item.CanEdit ? "checked" : "") @(!canEdit ? "disabled" : "") />
+                         <label class="form-check-label" for="edit_@i"><i class="bi bi-pencil text-warning"></i> Can Edit</label>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" 
-                                                       role="switch"
-                                                       id="delete_@i"
-                                                       name="Permissions[@i].CanDelete" 
-                                                       value="true" 
-                                                       @(item.CanDelete ? "checked" : "")
-                                                       @(!canEdit ? "disabled" : "") />
-                                                <label class="form-check-label" for="delete_@i">
-                                                    <i class="bi bi-trash text-danger"></i> Can Delete
-                                                </label>
+<input type="checkbox" class="form-check-input" role="switch" id="delete_@i" name="Permissions[@i].CanDelete" value="true" @(item.CanDelete ? "checked" : "") @(!canEdit ? "disabled" : "") />
+                         <label class="form-check-label" for="delete_@i"><i class="bi bi-trash text-danger"></i> Can Delete</label>
                                             </div>
                                         </div>
                                     </div>
