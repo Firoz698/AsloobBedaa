@@ -9,6 +9,7 @@ namespace AsloobBedaa.Models.Permission
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string ControllerName { get; set; } = string.Empty;
+        public string? Icon { get; set; } = string.Empty;
         public string ActionName { get; set; } = string.Empty;
         public int? ParentId { get; set; }
     }

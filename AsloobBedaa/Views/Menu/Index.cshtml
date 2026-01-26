@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Menus";
     int sessionUserId = Convert.ToInt32(Context.Session.GetInt32("UserId"));
-    string ?tempUserName = Convert.ToString(Context.Session.GetString("UserName"));
+    string? tempUserName = Convert.ToString(Context.Session.GetString("UserName"));
     string UserName = tempUserName ?? string.Empty;
     var permission = _permissionHelper.GetUserPermissionsForController(sessionUserId, UserName, "Menu");
 
@@ -51,6 +51,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Title</th>
+                    <th>Icon</th>
                     <th>Parent Menu</th>
                     <th>Controller</th>
                     <th>Action</th>
@@ -64,8 +65,24 @@
                     foreach (var menu in Model)
                     {
                         <tr>
-                            <td>@menu.Title</td>
-                            <td>@(menu.ParentId.HasValue ? menu.ParentId.ToString() : "None")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(menu.Icon))
+                                {
+                                    <i class="@menu.Icon me-2 text-primary"></i>
+                                }
+                                <strong>@menu.Title</strong>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(menu.Icon))
+                                {
+                                    <i class="@menu.Icon text-primary"></i>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>@(menu.ParentId.HasValue? menu.ParentId.ToString() : "None")</td>
                             <td>@menu.ControllerName</td>
                             <td>@menu.ActionName</td>
                             <td class="text-center">
@@ -95,7 +112,6 @@
                                         </button>
                                     </form>
                                 }
-
                             </td>
                         </tr>
                     }
@@ -103,7 +119,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center text-muted">No menus found.</td>
+                        <td colspan="7" class="text-center text-muted">No menus found.</td>
                     </tr>
                 }
             </tbody>
@@ -120,9 +136,15 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <h5 class="card-title mb-1">@menu.Title</h5>
+                                <h5 class="card-title mb-1">
+                                    @if (!string.IsNullOrEmpty(menu.Icon))
+                                    {
+                                        <i class="@menu.Icon me-2 text-primary"></i>
+                                    }
+                                    @menu.Title
+                                </h5>
                                 <p class="text-muted mb-2 small">
-                                    <strong>Parent:</strong> @(menu.ParentId.HasValue ? menu.ParentId.ToString() : "None")
+                                    <strong>Parent:</strong> @(menu.ParentId.HasValue? menu.ParentId.ToString() : "None")
                                 </p>
                             </div>
                             <div class="col-4 text-end">
@@ -168,8 +190,6 @@
                                     </button>
                                 </form>
                             }
-
-
                         </div>
                     </div>
                 </div>
@@ -192,7 +212,13 @@
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title mb-0">@menu.Title</h5>
+                            <h5 class="card-title mb-0">
+                                @if (!string.IsNullOrEmpty(menu.Icon))
+                                {
+                                    <i class="@menu.Icon me-2 text-primary"></i>
+                                }
+                                @menu.Title
+                            </h5>
                             @if (canEdit)
                             {
                                 <div class="form-check form-switch">
@@ -209,7 +235,7 @@
                         </div>
 
                         <p class="text-muted mb-2 small">
-                            <i class="bi bi-diagram-3"></i> <strong>Parent:</strong> @(menu.ParentId.HasValue ? menu.ParentId.ToString() : "None")
+                            <i class="bi bi-diagram-3"></i> <strong>Parent:</strong> @(menu.ParentId.HasValue? menu.ParentId.ToString() : "None")
                         </p>
 
                         <div class="mb-2">
@@ -231,13 +257,11 @@
                             @if (canDelete)
                             {
                                 <form asp-action="Delete" asp-route-id="@menu.Id" method="post">
-                                    <button type="submit" class="btn btn-danger btn-sm">
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">
                                         <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>
                             }
-
-
                         </div>
                     </div>
                 </div>
