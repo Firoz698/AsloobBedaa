@@ -1,13 +1,16 @@
 ﻿@model IEnumerable<AsloobBedaa.Models.PayrollMonthly>
-
 @{
     ViewData["Title"] = "Payroll Monthly";
 }
 
 <h2>Payroll Monthly</h2>
-
 <p>
-    <a class="btn btn-primary" asp-action="Create">Add New Payroll</a>
+    <a class="btn btn-primary" asp-action="Create">
+        <i class="fas fa-plus"></i> Add New Payroll
+    </a>
+    <a class="btn btn-success" asp-action="ImportCSV">
+        <i class="fas fa-file-upload"></i> Import CSV/Excel
+    </a>
 </p>
 
 <table class="table table-bordered table-striped">
