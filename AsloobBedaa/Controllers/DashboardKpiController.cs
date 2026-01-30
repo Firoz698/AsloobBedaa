@@ -14,7 +14,6 @@ namespace AsloobBedaa.Controllers
             _context = context;
         }
 
-        // GET: DashboardKpi
         public async Task<IActionResult> Index()
         {
             var data = await _context.DashboardKpis
@@ -23,38 +22,27 @@ namespace AsloobBedaa.Controllers
             return View(data);
         }
 
-        // GET: DashboardKpi/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: DashboardKpi/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DashboardKpi model)
         {
-            if (ModelState.IsValid)
-            {
-                model.CreatedDate = DateTime.Now;
+            if (!ModelState.IsValid)
+                return View(model);
 
-                // Status auto calculation
-                if (model.CurrentMonth > model.PreviousMonth)
-                    model.Status = "Increase";
-                else if (model.CurrentMonth < model.PreviousMonth)
-                    model.Status = "Decrease";
-                else
-                    model.Status = "Stable";
+            model.CreatedDate = DateTime.Now;
+            model.Status = CalculateStatus(model.CurrentMonth, model.PreviousMonth);
 
-                _context.DashboardKpis.Add(model);
-                await _context.SaveChangesAsync();
+            _context.DashboardKpis.Add(model);
+            await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
-            }
-            return View(model);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: DashboardKpi/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var kpi = await _context.DashboardKpis.FindAsync(id);
@@ -64,7 +52,6 @@ namespace AsloobBedaa.Controllers
             return View(kpi);
         }
 
-        // POST: DashboardKpi/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DashboardKpi model)
@@ -72,44 +59,36 @@ namespace AsloobBedaa.Controllers
             if (id != model.Id)
                 return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                var existing = await _context.DashboardKpis.FindAsync(id);
-                if (existing == null)
-                    return NotFound();
+            if (!ModelState.IsValid)
+                return View(model);
 
-                existing.KpiName = model.KpiName;
-                existing.CurrentMonth = model.CurrentMonth;
-                existing.PreviousMonth = model.PreviousMonth;
-                existing.YearToDate = model.YearToDate;
-                existing.Remarks = model.Remarks;
+            var existing = await _context.DashboardKpis.FindAsync(id);
+            if (existing == null)
+                return NotFound();
 
-                // Recalculate Status
-                if (model.CurrentMonth > model.PreviousMonth)
-                    existing.Status = "Increase";
-                else if (model.CurrentMonth < model.PreviousMonth)
-                    existing.Status = "Decrease";
-                else
-                    existing.Status = "Stable";
+            existing.KpiName = model.KpiName;
+            existing.CurrentMonth = model.CurrentMonth;
+            existing.PreviousMonth = model.PreviousMonth;
+            existing.YearToDate = model.YearToDate;
+            existing.Remarks = model.Remarks;
 
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            // Recalculate status safely
+            existing.Status = CalculateStatus(model.CurrentMonth, model.PreviousMonth);
 
-            return View(model);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: DashboardKpi/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var kpi = await _context.DashboardKpis.FirstOrDefaultAsync(x => x.Id == id);
+            var kpi = await _context.DashboardKpis
+                                    .FirstOrDefaultAsync(x => x.Id == id);
             if (kpi == null)
                 return NotFound();
 
             return View(kpi);
         }
 
-        // GET: DashboardKpi/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var kpi = await _context.DashboardKpis.FindAsync(id);
@@ -119,7 +98,6 @@ namespace AsloobBedaa.Controllers
             return View(kpi);
         }
 
-        // POST: DashboardKpi/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -132,5 +110,13 @@ namespace AsloobBedaa.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        private string CalculateStatus(decimal current, decimal previous)
+        {
+            if (current > previous) return "Increase";
+            if (current < previous) return "Decrease";
+            return "Stable";
+        }
     }
+
 }

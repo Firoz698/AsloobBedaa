@@ -2,7 +2,9 @@
 {
     public class PayrollCSVModel
     {
-        public List<PayrollMonthly> MatchedPayrolls { get; set; } = new List<PayrollMonthly>();
-        public List<PayrollMonthly> NonMatchedPayrolls { get; set; } = new List<PayrollMonthly>();
+        public IFormFile CsvFile { get; set; }
+        public List<PayrollMonthly> MatchedPayrolls { get; set; } = new();
+        public List<PayrollMonthly> NonMatchedPayrolls { get; set; } = new();
     }
+
 }

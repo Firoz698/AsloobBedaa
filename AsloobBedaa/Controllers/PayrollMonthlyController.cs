@@ -19,9 +19,7 @@ namespace AsloobBedaa.Controllers
         // GET: PayrollMonthly
         public async Task<IActionResult> Index()
         {
-            var payrolls = await _context.PayrollMonthlies
-                                         .OrderByDescending(x => x.Month)
-                                         .ToListAsync();
+            var payrolls = await _context.PayrollMonthlies.OrderByDescending(x => x.Month).ToListAsync();
             return View(payrolls);
         }
 
@@ -39,15 +37,11 @@ namespace AsloobBedaa.Controllers
             if (ModelState.IsValid)
             {
                 model.CreatedDate = DateTime.Now;
-
-                // Auto-calculate NetPayrollCost
                 model.NetPayrollCost = model.BasicSalary + model.Overtime + model.Allowances - model.Deductions;
-
                 _context.PayrollMonthlies.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
             return View(model);
         }
 
@@ -57,7 +51,6 @@ namespace AsloobBedaa.Controllers
             var payroll = await _context.PayrollMonthlies.FindAsync(id);
             if (payroll == null)
                 return NotFound();
-
             return View(payroll);
         }
 
@@ -84,25 +77,20 @@ namespace AsloobBedaa.Controllers
                 existing.Deductions = model.Deductions;
                 existing.WpsStatus = model.WpsStatus;
                 existing.Remarks = model.Remarks;
-
-                // Recalculate NetPayrollCost
                 existing.NetPayrollCost = model.BasicSalary + model.Overtime + model.Allowances - model.Deductions;
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
             return View(model);
         }
 
         // GET: PayrollMonthly/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var payroll = await _context.PayrollMonthlies
-                                        .FirstOrDefaultAsync(x => x.PayrollId == id);
+            var payroll = await _context.PayrollMonthlies.FirstOrDefaultAsync(x => x.PayrollId == id);
             if (payroll == null)
                 return NotFound();
-
             return View(payroll);
         }
 
@@ -112,7 +100,6 @@ namespace AsloobBedaa.Controllers
             var payroll = await _context.PayrollMonthlies.FindAsync(id);
             if (payroll == null)
                 return NotFound();
-
             return View(payroll);
         }
 
@@ -130,7 +117,8 @@ namespace AsloobBedaa.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: PayrollMonthly/ImportCSV
+        [HttpGet]
+        [Route("PayrollMonthly/ImportCSV")]
         public IActionResult ImportCSV()
         {
             var vm = new PayrollCSVModel
@@ -138,119 +126,114 @@ namespace AsloobBedaa.Controllers
                 MatchedPayrolls = new List<PayrollMonthly>(),
                 NonMatchedPayrolls = new List<PayrollMonthly>()
             };
-
             return View(vm);
         }
 
+        [HttpPost]
+        [Route("PayrollMonthly/UploadCSV")]
+        [ValidateAntiForgeryToken]
 
         // POST: PayrollMonthly/UploadCSV
         [HttpPost]
         public async Task<IActionResult> UploadCSV(IFormFile file)
         {
+            Console.WriteLine("=== UploadCSV POST called ===");
+
             if (file == null || file.Length == 0)
             {
                 TempData["Error"] = "Please select a file to upload.";
-                return RedirectToAction("ImportCSV");
+                var emptyVm = new PayrollCSVModel
+                {
+                    MatchedPayrolls = new List<PayrollMonthly>(),
+                    NonMatchedPayrolls = new List<PayrollMonthly>()
+                };
+                Console.WriteLine("No file - returning empty PayrollCSVModel");
+                return View("ImportCSV", emptyVm);
             }
 
-            var uploadedPayrolls = ReadPayrollsFromFile(file);
-
-            if (uploadedPayrolls.Count == 0)
+            try
             {
-                TempData["Error"] = "No valid payroll records found in the file.";
-                return RedirectToAction("ImportCSV");
+                var uploadedPayrolls = ReadPayrollsFromFile(file);
+                var existingPayrolls = await _context.PayrollMonthlies.ToListAsync();
+
+                var matched = new List<PayrollMonthly>();
+                var nonMatched = new List<PayrollMonthly>();
+
+                foreach (var payroll in uploadedPayrolls)
+                {
+                    if (existingPayrolls.Any(x => x.Month == payroll.Month && x.ProjectName == payroll.ProjectName))
+                        matched.Add(payroll);
+                    else
+                        nonMatched.Add(payroll);
+                }
+
+                var vm = new PayrollCSVModel
+                {
+                    MatchedPayrolls = matched,
+                    NonMatchedPayrolls = nonMatched
+                };
+
+                TempData["UploadedPayrolls"] = System.Text.Json.JsonSerializer.Serialize(uploadedPayrolls);
+
+                Console.WriteLine($"Returning PayrollCSVModel with {matched.Count} matched and {nonMatched.Count} non-matched");
+                return View("ImportCSV", vm);
             }
-
-            var existingPayrolls = await _context.PayrollMonthlies.ToListAsync();
-
-            var matched = new List<PayrollMonthly>();
-            var nonMatched = new List<PayrollMonthly>();
-
-            foreach (var payroll in uploadedPayrolls)
+            catch (Exception ex)
             {
-                // Check if payroll exists by Month and ProjectName
-                if (existingPayrolls.Any(x => x.Month == payroll.Month && x.ProjectName == payroll.ProjectName))
-                    matched.Add(payroll);
-                else
-                    nonMatched.Add(payroll);
+                Console.WriteLine($"Error: {ex.Message}");
+                TempData["Error"] = $"Error processing file: {ex.Message}";
+                var errorVm = new PayrollCSVModel
+                {
+                    MatchedPayrolls = new List<PayrollMonthly>(),
+                    NonMatchedPayrolls = new List<PayrollMonthly>()
+                };
+                return View("ImportCSV", errorVm);
             }
-
-            var viewModel = new PayrollCSVModel
-            {
-                MatchedPayrolls = matched,
-                NonMatchedPayrolls = nonMatched
-            };
-
-            // Store in TempData for the import action
-            TempData["UploadedPayrolls"] = System.Text.Json.JsonSerializer.Serialize(uploadedPayrolls);
-
-            return View("ImportCSV", viewModel);
         }
 
         // POST: PayrollMonthly/ImportPayrolls
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ImportPayrolls()
         {
+            var payrollsJson = TempData["UploadedPayrolls"]?.ToString();
+            if (string.IsNullOrEmpty(payrollsJson))
+            {
+                TempData["Error"] = "No payroll records to import. Please upload a file first.";
+                return RedirectToAction("ImportCSV");
+            }
+
             try
             {
-                var payrollsJson = TempData["UploadedPayrolls"]?.ToString();
-                if (string.IsNullOrEmpty(payrollsJson))
-                {
-                    TempData["Error"] = "No payroll records to import. Please upload a file first.";
-                    return RedirectToAction("ImportCSV");
-                }
-
                 var uploadedPayrolls = System.Text.Json.JsonSerializer.Deserialize<List<PayrollMonthly>>(payrollsJson);
                 var existingPayrolls = await _context.PayrollMonthlies.ToListAsync();
 
-                int addedCount = 0;
-                int updatedCount = 0;
-                int skippedCount = 0;
+                int addedCount = 0, updatedCount = 0, skippedCount = 0;
 
                 foreach (var payroll in uploadedPayrolls)
                 {
-                    // Check if payroll exists by Month and ProjectName
-                    var existingPayroll = existingPayrolls.FirstOrDefault(x =>
-                        x.Month == payroll.Month && x.ProjectName == payroll.ProjectName);
-
-                    if (existingPayroll != null)
+                    var existing = existingPayrolls.FirstOrDefault(x => x.Month == payroll.Month && x.ProjectName == payroll.ProjectName);
+                    if (existing != null)
                     {
-                        // Update existing payroll
-                        existingPayroll.NumberOfEmployees = payroll.NumberOfEmployees;
-                        existingPayroll.BasicSalary = payroll.BasicSalary;
-                        existingPayroll.Overtime = payroll.Overtime;
-                        existingPayroll.Allowances = payroll.Allowances;
-                        existingPayroll.Deductions = payroll.Deductions;
-                        existingPayroll.WpsStatus = payroll.WpsStatus ?? existingPayroll.WpsStatus;
-                        existingPayroll.Remarks = payroll.Remarks ?? existingPayroll.Remarks;
-
-                        // Recalculate NetPayrollCost
-                        existingPayroll.NetPayrollCost = existingPayroll.BasicSalary +
-                                                        existingPayroll.Overtime +
-                                                        existingPayroll.Allowances -
-                                                        existingPayroll.Deductions;
-
-                        _context.PayrollMonthlies.Update(existingPayroll);
+                        existing.NumberOfEmployees = payroll.NumberOfEmployees;
+                        existing.BasicSalary = payroll.BasicSalary;
+                        existing.Overtime = payroll.Overtime;
+                        existing.Allowances = payroll.Allowances;
+                        existing.Deductions = payroll.Deductions;
+                        existing.WpsStatus = payroll.WpsStatus ?? existing.WpsStatus;
+                        existing.Remarks = payroll.Remarks ?? existing.Remarks;
+                        existing.NetPayrollCost = existing.BasicSalary + existing.Overtime + existing.Allowances - existing.Deductions;
                         updatedCount++;
                     }
                     else
                     {
-                        // Validate required fields
                         if (string.IsNullOrWhiteSpace(payroll.ProjectName) || payroll.Month == default)
                         {
                             skippedCount++;
                             continue;
                         }
-
-                        // Add new payroll
                         payroll.CreatedDate = DateTime.Now;
-
-                        // Calculate NetPayrollCost
-                        payroll.NetPayrollCost = payroll.BasicSalary +
-                                                payroll.Overtime +
-                                                payroll.Allowances -
-                                                payroll.Deductions;
-
+                        payroll.NetPayrollCost = payroll.BasicSalary + payroll.Overtime + payroll.Allowances - payroll.Deductions;
                         _context.PayrollMonthlies.Add(payroll);
                         addedCount++;
                     }
@@ -258,17 +241,20 @@ namespace AsloobBedaa.Controllers
 
                 await _context.SaveChangesAsync();
 
+                // Clear TempData
+                TempData.Remove("UploadedPayrolls");
+
                 TempData["Success"] = $"Import completed! Added: {addedCount}, Updated: {updatedCount}, Skipped: {skippedCount}";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error importing payroll records: {ex.Message}";
+                TempData["Error"] = $"Import failed: {ex.Message}";
             }
 
             return RedirectToAction("ImportCSV");
         }
 
-        // Download CSV Template
+        // GET: DownloadTemplate
         public FileResult DownloadTemplate()
         {
             var csv =
@@ -277,58 +263,46 @@ namespace AsloobBedaa.Controllers
                 "2024-02-01,Project Beta,30,60000.00,6000.00,4000.00,2500.00,Pending,Sample payroll 2\r\n";
 
             var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
-
             return File(bytes, "text/csv", "payroll-template.csv");
         }
 
-        // Read payrolls from uploaded file
         private List<PayrollMonthly> ReadPayrollsFromFile(IFormFile file)
         {
             var payrolls = new List<PayrollMonthly>();
 
-            try
+            if (file == null || file.Length == 0)
+                return payrolls;
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            if (fileExtension == ".csv")
             {
-                if (file == null || file.Length == 0)
-                    return payrolls;
-
-                var fileExtension = Path.GetExtension(file.FileName).ToLower();
-
-                if (fileExtension == ".csv")
-                {
-                    payrolls = ReadPayrollsFromCSV(file);
-                }
-                else if (fileExtension == ".xlsx" || fileExtension == ".xls")
-                {
-                    payrolls = ReadPayrollsFromExcel(file);
-                }
-                else
-                {
-                    throw new Exception("Unsupported file format. Please upload .csv, .xlsx, or .xls file.");
-                }
+                payrolls = ReadPayrollsFromCSV(file);
             }
-            catch (Exception)
+            else if (fileExtension == ".xlsx" || fileExtension == ".xls")
             {
-                throw;
+                payrolls = ReadPayrollsFromExcel(file);
+            }
+            else
+            {
+                throw new Exception("Unsupported file format. Please upload .csv, .xlsx, or .xls file.");
             }
 
             return payrolls;
         }
 
-        // Read from CSV
         private List<PayrollMonthly> ReadPayrollsFromCSV(IFormFile file)
         {
             var payrolls = new List<PayrollMonthly>();
 
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
-                // Read header line
                 var headerLine = reader.ReadLine();
                 if (string.IsNullOrWhiteSpace(headerLine))
                     return payrolls;
 
                 var headers = headerLine.Split(',').Select(h => h.Trim()).ToArray();
 
-                // Read data lines
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
@@ -338,7 +312,6 @@ namespace AsloobBedaa.Controllers
                     try
                     {
                         var values = line.Split(',');
-
                         if (values.All(string.IsNullOrWhiteSpace))
                             continue;
 
@@ -389,7 +362,7 @@ namespace AsloobBedaa.Controllers
 
                         payrolls.Add(payroll);
                     }
-                    catch (Exception)
+                    catch
                     {
                         continue;
                     }
@@ -399,11 +372,9 @@ namespace AsloobBedaa.Controllers
             return payrolls;
         }
 
-        // Read from Excel
         private List<PayrollMonthly> ReadPayrollsFromExcel(IFormFile file)
         {
             var payrolls = new List<PayrollMonthly>();
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             using (var stream = file.OpenReadStream())
@@ -423,24 +394,20 @@ namespace AsloobBedaa.Controllers
                         if (row.ItemArray.All(field => field == null || string.IsNullOrWhiteSpace(field.ToString())))
                             continue;
 
-                        // Parse Month with better handling
                         DateTime monthValue = DateTime.Now;
                         if (table.Columns.Contains("Month"))
                         {
                             var monthData = row["Month"];
                             if (monthData != null)
                             {
-                                // Try to parse as DateTime directly (Excel date)
                                 if (monthData is DateTime)
                                 {
                                     monthValue = (DateTime)monthData;
                                 }
-                                // Try to parse string
                                 else if (DateTime.TryParse(monthData.ToString(), out DateTime parsedMonth))
                                 {
                                     monthValue = parsedMonth;
                                 }
-                                // Try to parse as Excel serial date number
                                 else if (double.TryParse(monthData.ToString(), out double serialDate))
                                 {
                                     monthValue = DateTime.FromOADate(serialDate);
@@ -463,7 +430,7 @@ namespace AsloobBedaa.Controllers
 
                         payrolls.Add(payroll);
                     }
-                    catch (Exception)
+                    catch
                     {
                         continue;
                     }

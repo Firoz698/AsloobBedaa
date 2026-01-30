@@ -1,11 +1,8 @@
 ﻿@model IEnumerable<AsloobBedaa.Models.DashboardKpi>
-@using AsloobBedaa.Models
+
 @{
     ViewBag.Title = "Dashboard";
-    var dashboardKpis = Model.ToList();
 }
-
-@* <h2 class="mb-4">Dashboard</h2> *@
 
 <div class="row">
     <div class="col-md-12">
@@ -21,15 +18,32 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var kpi in dashboardKpis)
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var kpi in Model)
+                    {
+                        <tr>
+                            <td>@kpi.KpiName</td>
+                            <td>@kpi.CurrentMonth</td>
+                            <td>@kpi.PreviousMonth</td>
+                            <td>@kpi.YearToDate</td>
+                            <td>
+                                <span class="badge
+                                            @(kpi.Status == "Increase" ? "bg-success" :
+                                                                            kpi.Status == "Decrease" ? "bg-danger" : "bg-secondary")">
+                            @kpi.Status
+                        </span>
+                    </td>
+                    <td>@kpi.Remarks</td>
+                </tr>
+                                }
+                }
+                else
                 {
                     <tr>
-                        <td>@kpi.KpiName</td>
-                        <td>@kpi.CurrentMonth</td>
-                        <td>@kpi.PreviousMonth</td>
-                        <td>@kpi.YearToDate</td>
-                        <td>@kpi.Status</td>
-                        <td>@kpi.Remarks</td>
+                        <td colspan="6" class="text-center text-muted">
+                            No KPI data available
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -37,37 +51,47 @@
     </div>
 </div>
 
-@* Summary KPIs for other metrics *@
+<hr />
+
 <div class="row mt-4">
     <div class="col-md-3">
         <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Active Projects</h5>
-                <p class="card-text">@ViewBag.ActiveProjects ?? 0</p>
+            <div class="card-body text-center">
+                <h6 class="card-title">Active Projects</h6>
+                <h4>@(ViewBag.ActiveProjects ?? 0)</h4>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Monthly Payroll Cost</h5>
-                <p class="card-text">@ViewBag.MonthlyPayroll ?? 0</p>
+            <div class="card-body text-center">
+                <h6 class="card-title">Monthly Payroll Cost</h6>
+                <h4>
+                    @(string.Format("{0:N2}", ViewBag.MonthlyPayroll ?? 0))
+                </h4>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Accounts Receivable</h5>
-                <p class="card-text">@ViewBag.AccountsReceivable ?? 0</p>
+            <div class="card-body text-center">
+                <h6 class="card-title">Accounts Receivable</h6>
+                <h4>
+                    @(string.Format("{0:N2}", ViewBag.AccountsReceivable ?? 0))
+                </h4>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card text-white bg-danger mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Accounts Payable</h5>
-                <p class="card-text">@ViewBag.AccountsPayable ?? 0</p>
+            <div class="card-body text-center">
+                <h6 class="card-title">Accounts Payable</h6>
+                <h4>
+                    @(string.Format("{0:N2}", ViewBag.AccountsPayable ?? 0))
+                </h4>
             </div>
         </div>
     </div>
@@ -76,11 +100,10 @@
 <div class="row mt-3">
     <div class="col-md-3">
         <div class="card text-white bg-secondary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Pending Final Settlements</h5>
-                <p class="card-text">@ViewBag.PendingSettlements ?? 0</p>
+            <div class="card-body text-center">
+                <h6 class="card-title">Pending Final Settlements</h6>
+                <h4>@(ViewBag.PendingSettlements ?? 0)</h4>
             </div>
         </div>
     </div>
 </div>
-

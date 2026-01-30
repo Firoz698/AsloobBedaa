@@ -13,7 +13,10 @@ namespace AsloobBedaa.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ActivityLogger _actilogger;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, ActivityLogger actilogger)
+        public HomeController(
+            ILogger<HomeController> logger,
+            ApplicationDbContext context,
+            ActivityLogger actilogger)
         {
             _logger = logger;
             _context = context;
@@ -22,37 +25,40 @@ namespace AsloobBedaa.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var name = HttpContext.Session.GetString("UserName");
-            ViewBag.UserName = name;
+            ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-            // Dashboard KPI list
-            var dashboardKpis = await _context.DashboardKpis.ToListAsync();
+            // KPI list
+            var dashboardKpis = await _context.DashboardKpis
+                                              .OrderBy(x => x.Id)
+                                              .ToListAsync();
 
             // Active Projects
             ViewBag.ActiveProjects = await _context.Subcontractors
-                                             .Where(s => s.Status == "Active")
-                                             .CountAsync();
+                .CountAsync(s => s.Status == "Active");
 
-            // Monthly Payroll - client-side evaluation to avoid EF Core ToString() issue
-            var currentMonthString = DateTime.Now;
-            ViewBag.MonthlyPayroll = _context.PayrollMonthlies
-                                      .AsEnumerable()  // brings data to memory
-                                      .Where(p => p.Month == currentMonthString)
-                                      .Sum(p => p.NetPayrollCost);
+            // Current month range
+            var now = DateTime.Now;
+            var firstDay = new DateTime(now.Year, now.Month, 1);
+            var lastDay = firstDay.AddMonths(1);
 
-            // Accounts Receivable & Payable
+            // Monthly Payroll (SAFE & FAST)
+            ViewBag.MonthlyPayroll = await _context.PayrollMonthlies
+                .Where(p => p.Month >= firstDay && p.Month < lastDay)
+                .SumAsync(p => (decimal?)p.NetPayrollCost) ?? 0;
+
+            // Accounts Receivable
             ViewBag.AccountsReceivable = await _context.AccountsTransactions
-                                                .Where(a => a.Type == "AR")
-                                                .SumAsync(a => a.BalanceAmount);
+                .Where(a => a.Type == "AR")
+                .SumAsync(a => (decimal?)a.BalanceAmount) ?? 0;
 
+            // Accounts Payable
             ViewBag.AccountsPayable = await _context.AccountsTransactions
-                                                .Where(a => a.Type == "AP")
-                                                .SumAsync(a => a.BalanceAmount);
+                .Where(a => a.Type == "AP")
+                .SumAsync(a => (decimal?)a.BalanceAmount) ?? 0;
 
             // Pending Final Settlements
             ViewBag.PendingSettlements = await _context.FinalSettlements
-                                               .Where(f => f.PaymentStatus != "Paid")
-                                               .CountAsync();
+                .CountAsync(f => f.PaymentStatus != "Paid");
 
             return View(dashboardKpis);
         }
@@ -60,7 +66,10 @@ namespace AsloobBedaa.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }
