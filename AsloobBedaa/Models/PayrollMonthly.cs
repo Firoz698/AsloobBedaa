@@ -4,7 +4,8 @@
     {
         public int PayrollId { get; set; }
 
-        public string Month { get; set; }     // e.g. Jan-2026
+        public DateTime Month { get; set; }
+        // e.g. Jan-2026
         public string ProjectName { get; set; }
 
         public int NumberOfEmployees { get; set; }

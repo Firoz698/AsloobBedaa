@@ -34,7 +34,7 @@ namespace AsloobBedaa.Controllers
                                              .CountAsync();
 
             // Monthly Payroll - client-side evaluation to avoid EF Core ToString() issue
-            var currentMonthString = DateTime.Now.ToString("MMM-yyyy");
+            var currentMonthString = DateTime.Now;
             ViewBag.MonthlyPayroll = _context.PayrollMonthlies
                                       .AsEnumerable()  // brings data to memory
                                       .Where(p => p.Month == currentMonthString)
