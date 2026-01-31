@@ -156,7 +156,7 @@ namespace AsloobBedaa.Controllers
             topTable.AddCell(refCell);
 
             // Right: Logo and Arabic text
-            var logoPath = Path.Combine(_env.WebRootPath, "images", "2b11d009-82ee-4eb4-bef0-26df98a628f6.png");
+            var logoPath = Path.Combine(_env.WebRootPath, "images", "header_logo.jpg");
 
             if (System.IO.File.Exists(logoPath))
             {
@@ -366,5 +366,8 @@ namespace AsloobBedaa.Controllers
             cb.Rectangle(iconX + 65, iconY, 18, 28);
             cb.Fill();
         }
+
+
+
     }
 }
