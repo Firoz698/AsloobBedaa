@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AsloobBedaa.Models;
+using AsloobBedaa.Models.Letter;
 using AsloobBedaa.Models.Permission;
 
 namespace AsloobBedaa.DataContext
@@ -13,6 +14,11 @@ namespace AsloobBedaa.DataContext
 
         // ===== Existing DbSets =====
         public DbSet<User>? Users { get; set; }
+        public DbSet<LetterType>? LetterTypes { get; set; }
+        public DbSet<LetterTemplate>? LetterTemplates { get; set; }
+        public DbSet<LetterTemplateSection>? LetterTemplateSections { get; set; }
+
+
         public DbSet<DashboardKpi>? DashboardKpis { get; set; }
         public DbSet<Subcontractor>? Subcontractors { get; set; }
         public DbSet<AccountsTransaction>? AccountsTransactions { get; set; }
