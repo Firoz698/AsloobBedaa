@@ -94,7 +94,7 @@ namespace AsloobBedaa.Controllers
                 return RedirectToAction("Preview", new { id });
             }
         }
- 
+
         private byte[] GenerateOfferLetterPDF(LetterTemplate template)
         {
             using var ms = new MemoryStream();
@@ -275,33 +275,41 @@ namespace AsloobBedaa.Controllers
 
             var baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
 
-            // ================ PAGE NUMBER (Bottom Center in Footer) ================
+            // ================ FOOTER (Bottom) ================
+            // Reduced footer height from 60 to 45
+            float footerHeight = 45;
+
+            // Footer background (light gray or tan color)
+            cb.SetColorFill(new BaseColor(240, 240, 235));
+            cb.Rectangle(0, 0, pageSize.Width, footerHeight);
+            cb.Fill();
+
+            // ================ ORANGE LINE AT TOP OF FOOTER ================
+            cb.SetColorFill(new BaseColor(255, 140, 0)); // Orange color
+            cb.Rectangle(0, footerHeight, pageSize.Width, 2); // 2px height orange line
+            cb.Fill();
+
+            // ================ PAGE NUMBER (Bottom Right in Footer) ================
             cb.BeginText();
             cb.SetFontAndSize(baseFont, 9);
             cb.SetColorFill(BaseColor.Black);
 
             var pageText = $"Page {currentPage}";
             var pageWidth = baseFont.GetWidthPoint(pageText, 9);
-            cb.SetTextMatrix((pageSize.Width - pageWidth) / 2, 45); // Center position in footer
+            float rightMargin = 40;
+            cb.SetTextMatrix(pageSize.Width - rightMargin - pageWidth, 30); // Right side position
             cb.ShowText(pageText);
             cb.EndText();
-
-            // ================ FOOTER (Bottom) ================
-            // Footer background (light gray or tan color)
-            cb.SetColorFill(new BaseColor(240, 240, 235));
-            cb.Rectangle(0, 0, pageSize.Width, 60);
-            cb.Fill();
 
             // Footer disclaimer text
             cb.BeginText();
             cb.SetFontAndSize(baseFont, 7);
             cb.SetColorFill(new BaseColor(100, 100, 100));
 
-            // Disclaimer text (centered)
+            // Disclaimer text (left aligned)
             float leftMargin = 40;
-            float rightMargin = 40;
-            float footerY = 25;
-            float maxWidth = pageSize.Width - leftMargin - rightMargin;
+            float footerY = 20;
+            float maxWidth = pageSize.Width - leftMargin - rightMargin - 80; // Extra space to avoid page number
 
             string disclaimer = "DISCLAIMER: This statement is for information purposes only. Payment amounts, services, and dates may change based on project needs and contractor agreements. Please verify all details with Accounts Department (Asloob Bedaa Contracting Co.) For any other inquiries or discrepancies, please contact our Accounts Department at +96654181845, +96656024445 or email us at accounts@asloob.com";
 
