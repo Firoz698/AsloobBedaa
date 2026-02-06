@@ -73,21 +73,13 @@ namespace AsloobBedaa.Controllers
             return View(data);
         }
 
-        // ===================== PDF GENERATION (EXACT MATCH) =====================
 
-        /// <summary>
-        /// Generate PDF matching exact offer letter design
-        /// </summary>
         [HttpGet]
         public IActionResult PrintPDF(int id)
         {
             try
             {
-                var data = _context.LetterTemplates
-                    .Include(x => x.Sections)
-                    .Include(x => x.LetterType)
-                    .FirstOrDefault(x => x.Id == id);
-
+                var data = _context.LetterTemplates.Include(x => x.Sections).Include(x => x.LetterType).FirstOrDefault(x => x.Id == id);
                 if (data == null)
                     return NotFound();
 
@@ -102,10 +94,7 @@ namespace AsloobBedaa.Controllers
                 return RedirectToAction("Preview", new { id });
             }
         }
-
-        /// <summary>
-        /// Generate PDF exactly matching the offer letter design
-        /// </summary>  
+ 
         private byte[] GenerateOfferLetterPDF(LetterTemplate template)
         {
             using var ms = new MemoryStream();
@@ -235,10 +224,6 @@ namespace AsloobBedaa.Controllers
 
             return ms.ToArray();
         }
-
-        /// <summary>
-        /// Get font path with fallback
-        /// </summary>
         private string GetFontPath()
         {
             var fontPath = Path.Combine(_env.WebRootPath, "fonts", "arial.ttf");
@@ -260,9 +245,13 @@ namespace AsloobBedaa.Controllers
         }
     }
 
-    /// <summary>
-    /// Footer matching the exact offer letter design
-    /// </summary>
+
+
+
+
+
+
+
     public class OfferLetterFooterHelper : PdfPageEventHelper
     {
         private readonly int _letterId;

@@ -17,7 +17,6 @@
         body {
             font-family: 'Times New Roman', Times, serif;
             background: #f5f5f5;
-            padding: 20px;
         }
 
         .container {
@@ -247,8 +246,27 @@
             <div class="loader-text">Generating PDF...</div>
         </div>
     </div>
+    <div class="row pb-1">
+        <!-- Action Buttons -->
+        <div class="action-bar">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                ← Back to List
+            </a>
+
+            <button onclick="window.print()" class="btn btn-primary">
+                🖨️ Browser Print
+            </button>
+
+            <a href="@Url.Action("PrintPDF", new { id = Model.Id })"
+               class="btn btn-success"
+               onclick="showLoading(); return true;">
+                📥 Download PDF
+            </a>
+        </div>
+    </div>
 
     <div class="container">
+
         <!-- Letter Content -->
         <div class="letter-page">
             <!-- Top Header - Centered Logo and Date -->
@@ -301,22 +319,7 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="action-bar">
-            <a href="@Url.Action("Index")" class="btn btn-secondary">
-                ← Back to List
-            </a>
-            
-            <button onclick="window.print()" class="btn btn-primary">
-                🖨️ Browser Print
-            </button>
-            
-            <a href="@Url.Action("PrintPDF", new { id = Model.Id })" 
-               class="btn btn-success"
-               onclick="showLoading(); return true;">
-                📥 Download PDF
-            </a>
-        </div>
+
     </div>
 
     <script>
