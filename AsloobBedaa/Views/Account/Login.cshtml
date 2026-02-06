@@ -4,7 +4,7 @@
 
 <style>
     body {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #f0f4ff, #e8f5e9);
         font-family: 'Segoe UI', sans-serif;
     }
 
@@ -16,114 +16,113 @@
     }
 
     .login-card {
-        background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        width: 360px;
-        padding: 40px 30px;
-        text-align: center;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        width: 400px;
+        padding: 45px 35px;
     }
 
     .login-logo {
-        width: 280px;
-        margin-bottom: 15px;
-    }
-
-    .system-name {
-        font-size: 20px;
-        font-weight: 700;
-        color: #0d6efd;
-        margin-bottom: 3px;
-    }
-
-        .system-name span {
-            color: #28a745;
-        }
-
-    .developed-by {
-        font-size: 13px;
-        color: #198754;
-        margin-bottom: 25px;
+        display: block;
+        margin: 0 auto 20px auto;
+        width: 260px;
     }
 
     .login-header {
+        text-align: center;
+        font-size: 20px;
         font-weight: 600;
         color: #212529;
-        font-size: 18px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 
     .form-label {
-        font-weight: 500;
         font-size: 14px;
+        font-weight: 500;
         color: #495057;
     }
 
     .form-control {
-        border-radius: 6px;
-        padding: 10px;
+        border-radius: 8px;
+        padding: 12px;
         font-size: 14px;
+        border: 1px solid #ced4da;
     }
 
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+        }
+
     .btn-login {
-        background-color: #0d6efd;
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         color: #fff;
         font-weight: 600;
         width: 100%;
-        padding: 10px;
-        transition: background-color 0.2s ease-in-out;
+        padding: 12px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 15px rgba(13, 110, 253, 0.35);
     }
 
         .btn-login:hover {
-            background-color: #0b5ed7;
+            background: linear-gradient(135deg, #0b5ed7, #084298);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.45);
         }
 
     .alert {
         font-size: 14px;
-        margin-bottom: 15px;
     }
 </style>
 
 <div class="login-container">
     <div class="login-card">
-        <img src="~/Logo/Complay_logo.png" alt="AsloobBedaa Logo" class="login-logo" />
+
+        <img src="~/images/header_logo.jpg" alt="AsloobBedaa Logo" class="login-logo" />
+
+        <div class="login-header">
+            Sign in to your account
+        </div>
 
         @if (ViewBag.Error != null)
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 @ViewBag.Error
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
 
-        <!-- 🔹 Login Form -->
+        <!-- Login Form -->
         <form asp-action="Login" method="post" class="needs-validation" novalidate>
-            <div class="mb-3 text-start">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required />
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" required />
                 <div class="invalid-feedback">
-                    Please enter your username.
+                    Username is required.
                 </div>
             </div>
 
-            <div class="mb-3 text-start">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required />
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" required />
                 <div class="invalid-feedback">
-                    Please enter your password.
+                    Password is required.
                 </div>
             </div>
 
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login">
+                Login
+            </button>
         </form>
+
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Bootstrap 5 client-side validation
         (function () {
             'use strict';
             var forms = document.querySelectorAll('.needs-validation');
