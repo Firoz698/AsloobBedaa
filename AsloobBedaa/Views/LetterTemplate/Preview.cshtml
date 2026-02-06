@@ -36,40 +36,28 @@
             position: relative;
         }
 
-        /* Top Header Section */
+        /* Top Header Section - Centered Logo and Date */
         .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            text-align: end;
             margin-bottom: 20px;
         }
 
-        .ref-section {
-            font-size: 9pt;
-            color: #000;
-        }
-
         .logo-section {
-            text-align: right;
-        }
-
-        .arabic-text {
-            font-size: 9pt;
-            color: #000;
-            margin-bottom: 5px;
-            direction: rtl;
+            display: inline-block;
         }
 
         .company-logo {
             max-width: 120px;
             height: auto;
-            margin: 5px 0;
+            margin-bottom: 10px;
         }
 
-        .company-subtitle {
-            font-size: 8pt;
-            color: #0066cc;
-            text-transform: uppercase;
+        .date-section {
+            font-size: 9pt;
+            color: #000;
+            margin-top: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff8c00;
         }
 
         /* Title */
@@ -107,16 +95,7 @@
             margin-bottom: 3px;
         }
 
-        /* Page Number (top right) */
-        .page-number {
-            position: absolute;
-            top: 15px;
-            right: 40px;
-            font-size: 9pt;
-            color: #000;
-        }
-
-        /* Footer - Matching exact design */
+        /* Footer - Updated design */
         .footer {
             position: absolute;
             bottom: 0;
@@ -124,54 +103,28 @@
             right: 0;
             height: 60px;
             background: #f0f0eb;
-            padding: 15px 40px;
-            font-size: 8pt;
+            padding: 10px 40px;
+            font-size: 7pt;
             color: #666;
         }
 
         .footer-content {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
-        .footer-left {
-            flex: 1;
-        }
-
-        .footer-contact {
+        .page-number {
+            font-size: 9pt;
+            color: #000;
             margin-bottom: 5px;
         }
 
-        .footer-address {
-            font-size: 7pt;
-        }
-
-        .footer-right {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .building-icon {
-            width: 15px;
-            height: 25px;
-            background: #b4b4aa;
-            border-radius: 1px;
-        }
-
-        .building-icon:nth-child(2) {
-            height: 30px;
-        }
-
-        .building-icon:nth-child(3) {
-            width: 20px;
-            height: 20px;
-        }
-
-        .building-icon:nth-child(4) {
-            width: 18px;
-            height: 28px;
+        .footer-disclaimer {
+            text-align: center;
+            line-height: 1.4;
         }
 
         /* Action Buttons */
@@ -298,23 +251,15 @@
     <div class="container">
         <!-- Letter Content -->
         <div class="letter-page">
-            <!-- Page Number -->
-            <div class="page-number">1 of 1</div>
-
-            <!-- Top Header -->
+            <!-- Top Header - Centered Logo and Date -->
             <div class="top-header">
-                <!-- Left: Ref and Date -->
-                <div class="ref-section">
-                    Ref: ASLOOB BEDAA/OFFER/KSA/131, Date: @DateTime.Now.ToString("dd/MM/yyyy")
-                </div>
-
-                <!-- Right: Logo Section -->
                 <div class="logo-section">
-                    <div class="arabic-text">شركة أسلوب بداع لمقاولات</div>
                     <img src="~/images/header_logo.jpg" 
                          alt="Company Logo" 
                          class="company-logo" />
-                    <div class="company-subtitle">Asloob Bedaa Contracting Company</div>
+                </div>
+                <div class="date-section">
+                    Date: @DateTime.Now.ToString("dd/MM/yyyy")
                 </div>
             </div>
 
@@ -322,16 +267,16 @@
             <h1 class="letter-title">@Model.Title</h1>
 
             <!-- Sections -->
-            @foreach (var section in Model.Sections.OrderBy(x => x.SerialNo))
+            @foreach (var sectiond in Model.Sections.OrderBy(x => x.SerialNo))
             {
                 <div class="section">
                     <div class="section-header">
-                        @* @section.SerialNo. @section.Header *@
+                        @sectiond.SerialNo. @sectiond.Header
                     </div>
                     <div class="section-content">
-                        @if (!string.IsNullOrEmpty(section.Description))
+                        @if (!string.IsNullOrEmpty(sectiond.Description))
                         {
-                            @foreach (var line in section.Description.Split('\n'))
+                            @foreach (var line in sectiond.Description.Split('\n'))
                             {
                                 if (!string.IsNullOrWhiteSpace(line))
                                 {
@@ -346,19 +291,11 @@
             <!-- Footer -->
             <div class="footer">
                 <div class="footer-content">
-                    <div class="footer-left">
-                        <div class="footer-contact">
-                            ☎ +966 11 483 9783 &nbsp;&nbsp; ✉ info@("@")asloob.com
-                        </div>
-                        <div class="footer-address">
-                            ⌂ Kingdom of Saudi Arabia - Riyadh - Al Arfaj - Olaya - PO Box 6715 - Postal Code 12611 - C.R. 1010447921
-                        </div>
-                    </div>
-                    <div class="footer-right">
-                        <div class="building-icon"></div>
-                        <div class="building-icon"></div>
-                        <div class="building-icon"></div>
-                        <div class="building-icon"></div>
+                    <div class="page-number">Page 1</div>
+                    <div class="footer-disclaimer">
+                        DISCLAIMER: This statement is for information purposes only. Payment amounts, services, and dates may change based on project needs and contractor agreements. 
+                        Please verify all details with Accounts Department (Asloob Bedaa Contracting Co.) For any other inquiries or discrepancies, 
+                        please contact our Accounts Department at +96654181845, +96656024445 or email us at accounts@("@")asloob.com
                     </div>
                 </div>
             </div>

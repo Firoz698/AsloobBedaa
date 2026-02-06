@@ -105,7 +105,7 @@ namespace AsloobBedaa.Controllers
 
         /// <summary>
         /// Generate PDF exactly matching the offer letter design
-        /// </summary>
+        /// </summary>  
         private byte[] GenerateOfferLetterPDF(LetterTemplate template)
         {
             using var ms = new MemoryStream();
@@ -138,71 +138,52 @@ namespace AsloobBedaa.Controllers
             Font boldFont = new Font(baseFont, 10, Font.BOLD, BaseColor.Black);
             Font normalFont = new Font(baseFont, 10, Font.NORMAL, BaseColor.Black);
             Font underlineFont = new Font(baseFont, 10, Font.BOLD | Font.UNDERLINE, BaseColor.Black);
-            Font companyFont = new Font(baseFont, 8, Font.NORMAL, new BaseColor(0, 102, 204));
 
-            // ================ TOP HEADER (Ref + Logo) ================
-            var topTable = new PdfPTable(2) { WidthPercentage = 100, SpacingAfter = 15f };
-            topTable.SetWidths(new float[] { 60f, 40f });
-
-            // Left: Ref and Date
-            var refText = $"Ref: ASLOOB BEDAA/OFFER/KSA/131, Date: {DateTime.Now:dd/MM/yyyy}";
-            var refCell = new PdfPCell(new Phrase(refText, refFont))
-            {
-                Border = Rectangle.NO_BORDER,
-                HorizontalAlignment = Element.ALIGN_LEFT,
-                VerticalAlignment = Element.ALIGN_TOP,
-                PaddingTop = 5f
-            };
-            topTable.AddCell(refCell);
-
-            // Right: Logo and Arabic text
+            // ================ TOP HEADER (Logo + Date) ================
             var logoPath = Path.Combine(_env.WebRootPath, "images", "header_logo.jpg");
 
             if (System.IO.File.Exists(logoPath))
             {
-                var logoTable = new PdfPTable(1);
-
-                // Arabic text (if you have Arabic font)
-                var arabicText = new Phrase("شركة أسلوب بداع لمقاولات", refFont);
-                var arabicCell = new PdfPCell(arabicText)
-                {
-                    Border = Rectangle.NO_BORDER,
-                    HorizontalAlignment = Element.ALIGN_RIGHT
-                };
-                logoTable.AddCell(arabicCell);
-
                 // Logo
                 var logo = iTextSharp.text.Image.GetInstance(logoPath);
                 logo.ScaleToFit(120f, 40f);
-                var logoImgCell = new PdfPCell(logo)
-                {
-                    Border = Rectangle.NO_BORDER,
-                    HorizontalAlignment = Element.ALIGN_RIGHT,
-                    PaddingTop = 5f
-                };
-                logoTable.AddCell(logoImgCell);
+                logo.Alignment = Element.ALIGN_RIGHT;
+                doc.Add(logo);
 
-                // Company name
-                var companyName = new Phrase("ASLOOB BEDAA CONTRACTING COMPANY", companyFont);
-                var companyCell = new PdfPCell(companyName)
-                {
-                    Border = Rectangle.NO_BORDER,
-                    HorizontalAlignment = Element.ALIGN_RIGHT
-                };
-                logoTable.AddCell(companyCell);
+                // Add spacing between logo and date
+                doc.Add(new Paragraph("\n"));
 
-                var rightCell = new PdfPCell(logoTable)
+                // Date below logo (centered)
+                var dateText = $"Date: {DateTime.Now:dd/MM/yyyy}";
+                var datePara = new Paragraph(dateText, refFont)
                 {
-                    Border = Rectangle.NO_BORDER
+                    Alignment = Element.ALIGN_RIGHT,
+                    SpacingAfter = 10f
                 };
-                topTable.AddCell(rightCell);
+                doc.Add(datePara);
+
+                // Orange line below date
+                var orangeLine = new iTextSharp.text.pdf.draw.LineSeparator(2f, 100f, new BaseColor(255, 140, 0), Element.ALIGN_CENTER, -5);
+                doc.Add(new Chunk(orangeLine));
+                doc.Add(new Paragraph(" ") { SpacingAfter = 15f });
             }
             else
             {
-                topTable.AddCell(new PdfPCell(new Phrase("")) { Border = Rectangle.NO_BORDER });
+                // If logo not found, just add date
+                var dateText = $"Date: {DateTime.Now:dd/MM/yyyy}";
+                var datePara = new Paragraph(dateText, refFont)
+                {
+                    Alignment = Element.ALIGN_CENTER,
+                    SpacingAfter = 10f
+                };
+                doc.Add(datePara);
+
+                // Orange line below date
+                var orangeLine = new iTextSharp.text.pdf.draw.LineSeparator(2f, 100f, new BaseColor(255, 140, 0), Element.ALIGN_CENTER, -5);
+                doc.Add(new Chunk(orangeLine));
+                doc.Add(new Paragraph(" ") { SpacingAfter = 15f });
             }
 
-            doc.Add(topTable);
             doc.Add(new Paragraph("\n"));
 
             // ================ TITLE (Offer Letter / Letter Title) ================
@@ -286,7 +267,6 @@ namespace AsloobBedaa.Controllers
     {
         private readonly int _letterId;
         private readonly string _createdBy;
-        private int _totalPages = 0;
 
         public OfferLetterFooterHelper(int letterId, string createdBy)
         {
@@ -306,14 +286,14 @@ namespace AsloobBedaa.Controllers
 
             var baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
 
-            // ================ PAGE NUMBER (Top Right like "1 of 3") ================
+            // ================ PAGE NUMBER (Bottom Center in Footer) ================
             cb.BeginText();
             cb.SetFontAndSize(baseFont, 9);
             cb.SetColorFill(BaseColor.Black);
 
-            var pageText = $"{currentPage} of 3"; // You can calculate total pages dynamically
+            var pageText = $"Page {currentPage}";
             var pageWidth = baseFont.GetWidthPoint(pageText, 9);
-            cb.SetTextMatrix(pageSize.Width - 40 - pageWidth, pageSize.Height - 30);
+            cb.SetTextMatrix((pageSize.Width - pageWidth) / 2, 45); // Center position in footer
             cb.ShowText(pageText);
             cb.EndText();
 
@@ -323,51 +303,50 @@ namespace AsloobBedaa.Controllers
             cb.Rectangle(0, 0, pageSize.Width, 60);
             cb.Fill();
 
-            // Footer icons and text
+            // Footer disclaimer text
             cb.BeginText();
-            cb.SetFontAndSize(baseFont, 8);
+            cb.SetFontAndSize(baseFont, 7);
             cb.SetColorFill(new BaseColor(100, 100, 100));
 
-            // Left side: Phone and Email
+            // Disclaimer text (centered)
             float leftMargin = 40;
-            float footerY = 35;
+            float rightMargin = 40;
+            float footerY = 25;
+            float maxWidth = pageSize.Width - leftMargin - rightMargin;
 
-            // Phone icon + number
-            cb.SetTextMatrix(leftMargin, footerY);
-            cb.ShowText("☎ +966 11 483 9783   ✉ info@asloob.com");
+            string disclaimer = "DISCLAIMER: This statement is for information purposes only. Payment amounts, services, and dates may change based on project needs and contractor agreements. Please verify all details with Accounts Department (Asloob Bedaa Contracting Co.) For any other inquiries or discrepancies, please contact our Accounts Department at +96654181845, +96656024445 or email us at accounts@asloob.com";
 
-            // Address line
-            cb.SetTextMatrix(leftMargin, footerY - 12);
-            cb.ShowText("⌂ Kingdom of Saudi Arabia - Riyadh - Al Arfaj - Olaya - PO Box 6715 - Postal Code 12611 - C.R. 1010447921");
+            // Split disclaimer into multiple lines
+            var words = disclaimer.Split(' ');
+            var currentLine = "";
+            var yPosition = footerY;
+
+            foreach (var word in words)
+            {
+                var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+                var testWidth = baseFont.GetWidthPoint(testLine, 7);
+
+                if (testWidth > maxWidth && !string.IsNullOrEmpty(currentLine))
+                {
+                    cb.SetTextMatrix(leftMargin, yPosition);
+                    cb.ShowText(currentLine);
+                    currentLine = word;
+                    yPosition -= 8;
+                }
+                else
+                {
+                    currentLine = testLine;
+                }
+            }
+
+            // Print last line
+            if (!string.IsNullOrEmpty(currentLine))
+            {
+                cb.SetTextMatrix(leftMargin, yPosition);
+                cb.ShowText(currentLine);
+            }
 
             cb.EndText();
-
-            // Right side: Building icons (decorative)
-            // You can add small building icons here if you have them
-            // For now, using simple rectangles as placeholders
-            cb.SetColorFill(new BaseColor(180, 180, 170));
-
-            float iconX = pageSize.Width - 100;
-            float iconY = 15;
-
-            // Building 1
-            cb.Rectangle(iconX, iconY, 15, 25);
-            cb.Fill();
-
-            // Building 2
-            cb.Rectangle(iconX + 20, iconY, 15, 30);
-            cb.Fill();
-
-            // Building 3
-            cb.Rectangle(iconX + 40, iconY, 20, 20);
-            cb.Fill();
-
-            // Building 4
-            cb.Rectangle(iconX + 65, iconY, 18, 28);
-            cb.Fill();
         }
-
-
-
     }
 }

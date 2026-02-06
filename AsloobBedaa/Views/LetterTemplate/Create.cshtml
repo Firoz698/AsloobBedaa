@@ -3,7 +3,7 @@
 
 <h3>Create Letter</h3>
 
-<form method="post">
+<form method="post" onsubmit="return validateForm();">
     <div class="mb-2">
         <label>Letter Type</label>
         <select asp-for="LetterTypeId" class="form-control">
@@ -16,7 +16,7 @@
 
     <div class="mb-2">
         <label>Title</label>
-        <input asp-for="Title" class="form-control" />
+        <input asp-for="Title" class="form-control" id="titleInput" />
     </div>
 
     <hr />
@@ -41,6 +41,7 @@
 
 <script>
     let index = 0;
+
     function addRow() {
         let row = `
         <tr>
@@ -48,7 +49,20 @@
             <td><input name="Sections[${index}].Header" class="form-control"/></td>
             <td><textarea name="Sections[${index}].Description" class="form-control"></textarea></td>
         </tr>`;
-        document.querySelector("#sectionTable tbody").insertAdjacentHTML("beforeend", row);
+        document.querySelector("#sectionTable tbody")
+            .insertAdjacentHTML("beforeend", row);
         index++;
+    }
+
+    function validateForm() {
+        let title = document.getElementById("titleInput").value.trim();
+
+        if (title === "") {
+            alert("Please enter a title before submitting the form.");
+
+            return false; // form submit বন্ধ
+        }
+
+        return true; // সব ঠিক থাকলে submit হবে
     }
 </script>
