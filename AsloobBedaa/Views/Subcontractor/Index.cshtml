@@ -1,47 +1,501 @@
 ﻿@model IEnumerable<Subcontractor>
-
 @{
     ViewData["Title"] = "Subcontractors";
 }
 
-<h2 class="mb-3">Subcontractors</h2>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-people-fill"></i> Subcontractors
+                    </h2>
+                    <p class="text-muted mb-0">Manage subcontractor contracts and payments</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add New Subcontractor
+                </a>
+            </div>
+        </div>
+    </div>
 
-<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Subcontractor</a>
+    <!-- Summary Cards -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Active</h6>
+                            <h4 class="mb-0" id="activeCount">0</h4>
+                        </div>
+                        <i class="bi bi-check-circle-fill" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Completed</h6>
+                            <h4 class="mb-0" id="completedCount">0</h4>
+                        </div>
+                        <i class="bi bi-clipboard-check-fill" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-dark-50">Pending</h6>
+                            <h4 class="mb-0" id="pendingCount">0</h4>
+                        </div>
+                        <i class="bi bi-clock-fill" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Total Value</h6>
+                            <h5 class="mb-0" id="totalValue">0.00</h5>
+                        </div>
+                        <i class="bi bi-currency-dollar" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Name</th>
-            <th>Project</th>
-            <th>Contract Value</th>
-            <th>Paid</th>
-            <th>Outstanding</th>
-            <th>Status</th>
-            <th width="180">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.SubcontractorName</td>
-                <td>@item.ProjectName</td>
-                <td>@item.ContractValue</td>
-                <td>@item.PaidAmount</td>
-                <td>@item.OutstandingBalance</td>
-                <td>
-                    <span class="badge
-                        @(item.Status == "Active" ? "bg-success" :
-                                                item.Status == "Completed" ? "bg-primary" : "bg-warning")">
-                    @item.Status
-                </span>
-            </td>
-            <td style="padding:.5rem .3rem">
-                <a asp-action="Edit" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-warning">Edit</a>
-                <a asp-action="Details" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-info">Details</a>
-                <a asp-action="Delete" asp-route-id="@item.SubcontractorId" class="btn btn-sm btn-danger">Delete</a>
-            </td>
-        </tr>
+    <!-- Search and Filter Section -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control border-start-0"
+                                       placeholder="Search by name or project...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <select id="statusFilter" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button type="button" class="btn btn-outline-success w-100" onclick="exportToExcel()">
+                                <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-lg-block">
+                        <table class="table table-hover mb-0" id="subcontractorsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Subcontractor Name</th>
+                                    <th>Project</th>
+                                    <th class="text-end">Contract Value</th>
+                                    <th class="text-end">Monthly Billing</th>
+                                    <th class="text-end">Paid Amount</th>
+                                    <th class="text-end">Outstanding Balance</th>
+                                    <th class="text-end">Retention</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center" width="200">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="subcontractor-row">
+                                        <td class="fw-semibold">
+                                            <i class="bi bi-person-badge text-primary me-2"></i>
+                                            @item.SubcontractorName
+                                        </td>
+                                        <td>@item.ProjectName</td>
+                                        <td class="text-end fw-bold">@item.ContractValue.ToString("N2")</td>
+                                        <td class="text-end">@item.MonthlyBilling.ToString("N2")</td>
+                                        <td class="text-end text-success">@item.PaidAmount.ToString("N2")</td>
+                                        <td class="text-end fw-bold @(item.OutstandingBalance > 0 ? "text-danger" : "text-success")">
+                                            @item.OutstandingBalance.ToString("N2")
+                                        </td>
+                                        <td class="text-end text-warning">@item.RetentionAmount.ToString("N2")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(item.Status == "Active" ? "bg-success" : item.Status == "Completed" ? "bg-primary" : "bg-warning text-dark") px-3 py-2">
+                                                <i class="bi @(item.Status == "Active" ? "bi-play-circle" : item.Status == "Completed" ? "bi-check-circle" : "bi-clock")"></i>
+                                                @item.Status
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.SubcontractorId"
+                                                   class="btn btn-info text-white" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.SubcontractorId"
+                                                   class="btn btn-warning" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.SubcontractorId"
+                                                   class="btn btn-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile/Tablet Card View -->
+                    <div class="d-lg-none">
+                        @foreach (var item in Model)
+                        {
+                            <div class="card mb-3 mx-3 mt-3 subcontractor-card border-start border-@(item.Status == "Active" ? "success" : item.Status == "Completed" ? "primary" : "warning") border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title mb-1 fw-bold">
+                                                <i class="bi bi-person-badge text-primary me-1"></i>
+                                                @item.SubcontractorName
+                                            </h5>
+                                            <p class="text-muted mb-0 small">
+                                                <i class="bi bi-building"></i> @item.ProjectName
+                                            </p>
+                                        </div>
+                                        <span class="badge @(item.Status == "Active" ? "bg-success" : item.Status == "Completed" ? "bg-primary" : "bg-warning text-dark") px-3 py-2">
+                                            <i class="bi @(item.Status == "Active" ? "bi-play-circle" : item.Status == "Completed" ? "bi-check-circle" : "bi-clock")"></i>
+                                            @item.Status
+                                        </span>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Contract Value</small>
+                                            <strong class="text-primary">@item.ContractValue.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Monthly Billing</small>
+                                            <strong>@item.MonthlyBilling.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Paid Amount</small>
+                                            <strong class="text-success">@item.PaidAmount.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Retention</small>
+                                            <strong class="text-warning">@item.RetentionAmount.ToString("N2")</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="border-top pt-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">Outstanding Balance</span>
+                                            <h5 class="mb-0 fw-bold @(item.OutstandingBalance > 0 ? "text-danger" : "text-success")">
+                                                @item.OutstandingBalance.ToString("N2")
+                                            </h5>
+                                        </div>
+                                        @if (item.OutstandingBalance > 0)
+                                        {
+                                            var percentage = ((item.PaidAmount / item.ContractValue) * 100);
+                                            <div class="mt-2">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <small class="text-muted">Payment Progress</small>
+                                                    <small class="text-muted">@percentage.ToString("N1")%</small>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar @(percentage >= 75 ? "bg-success" : percentage >= 50 ? "bg-info" : percentage >= 25 ? "bg-warning" : "bg-danger")"
+                                                         role="progressbar"
+                                                         style="width: @percentage%;"
+                                                         aria-valuenow="@percentage"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(item.Remarks))
+                                    {
+                                        <div class="alert alert-info py-2 mb-3">
+                                            <small><i class="bi bi-info-circle"></i> @item.Remarks</small>
+                                        </div>
+                                    }
+
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.SubcontractorId"
+                                           class="btn btn-sm btn-info text-white flex-fill">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.SubcontractorId"
+                                           class="btn btn-sm btn-warning flex-fill">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.SubcontractorId"
+                                           class="btn btn-sm btn-danger flex-fill">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="text-center py-5 d-none">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">No subcontractors found matching your criteria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Calculate and update summary cards
+        function updateSummaryCards() {
+            const rows = document.querySelectorAll('.subcontractor-row');
+            const cards = document.querySelectorAll('.subcontractor-card');
+            let active = 0, completed = 0, pending = 0;
+            let totalContractValue = 0;
+
+            // Count from table rows (desktop)
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const statusBadge = row.querySelector('.badge');
+                    if (statusBadge) {
+                        const status = statusBadge.textContent.trim();
+                        if (status.includes('Active')) active++;
+                        else if (status.includes('Completed')) completed++;
+                        else if (status.includes('Pending')) pending++;
+                    }
+
+                    // Get contract value from the third column (Contract Value)
+                    const contractValueCell = row.querySelector('td:nth-child(3)');
+                    if (contractValueCell) {
+                        const value = parseFloat(contractValueCell.textContent.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            totalContractValue += value;
+                        }
+                    }
                 }
-    </tbody>
-</table>
+            });
+
+            // Count from cards (mobile)
+            cards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    const statusBadge = card.querySelector('.badge');
+                    if (statusBadge) {
+                        const status = statusBadge.textContent.trim();
+                        if (status.includes('Active')) active++;
+                        else if (status.includes('Completed')) completed++;
+                        else if (status.includes('Pending')) pending++;
+                    }
+
+                    // Get contract value from card
+                    const contractValueElement = card.querySelector('.text-primary');
+                    if (contractValueElement) {
+                        const value = parseFloat(contractValueElement.textContent.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            totalContractValue += value;
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('activeCount').textContent = active;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('totalValue').textContent = totalContractValue.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Search and Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const tableRows = document.querySelectorAll('.subcontractor-row');
+            const cards = document.querySelectorAll('.subcontractor-card');
+            const noResults = document.getElementById('noResults');
+
+            // Initial summary update
+            updateSummaryCards();
+
+            function filterData() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const statusValue = statusFilter.value.toLowerCase();
+                let visibleCount = 0;
+
+                // Filter table rows (desktop)
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const statusBadge = row.querySelector('.badge');
+                    const matchesStatus = !statusValue || (statusBadge && statusBadge.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filter cards (mobile)
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const statusBadge = card.querySelector('.badge');
+                    const matchesStatus = !statusValue || (statusBadge && statusBadge.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+
+                // Update summary cards
+                updateSummaryCards();
+            }
+
+            searchInput.addEventListener('keyup', filterData);
+            statusFilter.addEventListener('change', filterData);
+        });
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.querySelectorAll('.subcontractor-row, .subcontractor-card').forEach(el => {
+                el.style.display = '';
+            });
+            document.getElementById('noResults').classList.add('d-none');
+            updateSummaryCards();
+        }
+
+        function exportToExcel() {
+            // Placeholder for Excel export functionality
+            alert('Export to Excel functionality will be implemented here.');
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .subcontractor-card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Summary card styling */
+        .bg-success, .bg-warning, .bg-danger, .bg-info, .bg-primary {
+            background: linear-gradient(135deg, var(--bs-bg-opacity, 1) 0%, rgba(255,255,255,0.15) 100%);
+        }
+
+        /* Progress bar styling */
+        .progress {
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+
+        @@media (max-width: 991.98px) {
+            .subcontractor-card
+
+        {
+            margin-left: 1rem !important;
+            margin-right: 1rem !important;
+        }
+
+        }
+
+        /* Mobile optimization */
+        @@media (max-width: 575.98px) {
+            .subcontractor-card
+
+        {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
+        }
+
+        }
+    </style>
+}

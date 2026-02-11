@@ -170,7 +170,7 @@ namespace AsloobBedaa.Controllers
                 // Orange line below date
                 var orangeLine = new iTextSharp.text.pdf.draw.LineSeparator(2f, 100f, new BaseColor(255, 140, 0), Element.ALIGN_CENTER, -5);
                 doc.Add(new Chunk(orangeLine));
-                doc.Add(new Paragraph(" ") { SpacingAfter = 15f });
+                doc.Add(new Paragraph(" ") { SpacingAfter = 10f });
             }
 
             doc.Add(new Paragraph("\n"));

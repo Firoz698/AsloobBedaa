@@ -1,47 +1,474 @@
 ﻿@model IEnumerable<DashboardKpi>
-
 @{
     ViewData["Title"] = "Dashboard KPI";
 }
 
-<h2 class="mb-3">Dashboard KPI</h2>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-graph-up-arrow"></i> Dashboard KPIs
+                    </h2>
+                    <p class="text-muted mb-0">Key Performance Indicators Overview</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add New KPI
+                </a>
+            </div>
+        </div>
+    </div>
 
-<a asp-action="Create" class="btn btn-primary mb-3">➕ Add New KPI</a>
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control border-start-0"
+                                       placeholder="Search KPIs...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <select id="statusFilter" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="Increase">Increase</option>
+                                <option value="Decrease">Decrease</option>
+                                <option value="Stable">Stable</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="gridView" onclick="switchView('grid')">
+                                    <i class="bi bi-grid-3x3-gap"></i> Grid
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="tableView" onclick="switchView('table')">
+                                    <i class="bi bi-table"></i> Table
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>KPI</th>
-            <th>Current Month</th>
-            <th>Previous Month</th>
-            <th>YTD</th>
-            <th>Status</th>
-            <th>Remarks</th>
-            <th width="180">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.KpiName</td>
-                <td>@item.CurrentMonth</td>
-                <td>@item.PreviousMonth</td>
-                <td>@item.YearToDate</td>
-                <td>
-                    <span class="badge
-                        @(item.Status == "Increase" ? "bg-success" :
-                                                item.Status == "Decrease" ? "bg-danger" : "bg-secondary")">
-                    @item.Status
-                </span>
-            </td>
-            <td>@item.Remarks</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
-            </td>
-        </tr>
+    <!-- Grid View (Default) -->
+    <div id="gridContainer">
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                var changePercent = item.PreviousMonth != 0
+                ? ((item.CurrentMonth - item.PreviousMonth) / item.PreviousMonth) * 100
+                : 0;
+                var isPositive = item.Status == "Increase";
+                var isNegative = item.Status == "Decrease";
+
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 kpi-card-container">
+                    <div class="card kpi-card h-100 shadow-sm border-0 border-start border-4 border-@(isPositive ? "success" : isNegative ? "danger" : "secondary")">
+                        <div class="card-body">
+                            <!-- KPI Header -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h6 class="card-subtitle text-muted text-uppercase small mb-0">
+                                    @item.KpiName
+                                </h6>
+                                <span class="badge @(isPositive ? "bg-success" : isNegative ? "bg-danger" : "bg-secondary")">
+                                    <i class="bi @(isPositive ? "bi-arrow-up" : isNegative ? "bi-arrow-down" : "bi-dash")"></i>
+                                    @item.Status
+                                </span>
+                            </div>
+
+                            <!-- Current Month Value -->
+                            <div class="mb-3">
+                                <h2 class="mb-1 fw-bold text-@(isPositive ? "success" : isNegative ? "danger" : "dark")">
+                                    @item.CurrentMonth.ToString("N2")
+                                </h2>
+                                <small class="text-muted">Current Month</small>
+                            </div>
+
+                            <!-- Change Indicator -->
+                            @if (changePercent != 0)
+                            {
+                                <div class="mb-3">
+                                    <span class="badge bg-light text-@(isPositive ? "success" : isNegative ? "danger" : "secondary") px-3 py-2">
+                                        <i class="bi @(isPositive ? "bi-arrow-up-short" : isNegative ? "bi-arrow-down-short" : "bi-dash")"></i>
+                                        @Math.Abs(changePercent).ToString("N1")% vs Previous
+                                    </span>
+                                </div>
+                            }
+
+                            <!-- Stats Row -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded">
+                                        <small class="text-muted d-block">Previous</small>
+                                        <strong class="small">@item.PreviousMonth.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-2 bg-light rounded">
+                                        <small class="text-muted d-block">YTD</small>
+                                        <strong class="small">@item.YearToDate.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Remarks -->
+                            @if (!string.IsNullOrEmpty(item.Remarks))
+                            {
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle"></i> @item.Remarks
+                                    </small>
+                                </div>
+                            }
+
+                            <!-- Progress Bar -->
+                            @if (item.PreviousMonth > 0)
+                            {
+                                var progressPercent = Math.Min((item.CurrentMonth / item.PreviousMonth) * 100, 200);
+                                <div class="mb-3">
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-@(isPositive ? "success" : isNegative ? "danger" : "secondary")"
+                                             role="progressbar"
+                                             style="width: @progressPercent%;"
+                                             aria-valuenow="@progressPercent"
+                                             aria-valuemin="0"
+                                             aria-valuemax="200">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Actions -->
+                            <div class="d-flex gap-2 border-top pt-3">
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-secondary flex-fill" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-primary flex-fill" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-danger flex-fill" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- No Results for Grid -->
+        <div id="noResultsGrid" class="text-center py-5 d-none">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3">No KPIs found matching your criteria</p>
+        </div>
+    </div>
+
+    <!-- Table View (Hidden by default) -->
+    <div id="tableContainer" class="d-none">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>KPI Name</th>
+                                <th class="text-end">Current Month</th>
+                                <th class="text-end">Previous Month</th>
+                                <th class="text-end">Change %</th>
+                                <th class="text-end">YTD</th>
+                                <th class="text-center">Status</th>
+                                <th>Remarks</th>
+                                <th class="text-center" width="200">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var changePercent = item.PreviousMonth != 0
+                                ? ((item.CurrentMonth - item.PreviousMonth) / item.PreviousMonth) * 100
+                                : 0;
+                                var isPositive = item.Status == "Increase";
+                                var isNegative = item.Status == "Decrease";
+
+                                <tr class="kpi-row">
+                                    <td class="fw-semibold">
+                                        <i class="bi bi-graph-up text-primary me-2"></i>
+                                        @item.KpiName
+                                    </td>
+                                    <td class="text-end fw-bold text-@(isPositive ? "success" : isNegative ? "danger" : "dark")">
+                                        @item.CurrentMonth.ToString("N2")
+                                    </td>
+                                    <td class="text-end">@item.PreviousMonth.ToString("N2")</td>
+                                    <td class="text-end">
+                                        @if (changePercent != 0)
+                                        {
+                                            <span class="badge bg-light text-@(isPositive ? "success" : isNegative ? "danger" : "secondary")">
+                                                <i class="bi @(isPositive ? "bi-arrow-up" : isNegative ? "bi-arrow-down" : "bi-dash")"></i>
+                                                @changePercent.ToString("N1")%
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">@item.YearToDate.ToString("N2")</td>
+                                    <td class="text-center">
+                                        <span class="badge @(isPositive ? "bg-success" : isNegative ? "bg-danger" : "bg-secondary") px-3 py-2">
+                                            <i class="bi @(isPositive ? "bi-arrow-up" : isNegative ? "bi-arrow-down" : "bi-dash")"></i>
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Remarks))
+                                        {
+                                            <small class="text-muted">@item.Remarks</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-info text-white" title="Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="btn btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="btn btn-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Results for Table -->
+                <div id="noResultsTable" class="text-center py-5 d-none">
+                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3">No KPIs found matching your criteria</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // View Switching
+        function switchView(view) {
+            const gridContainer = document.getElementById('gridContainer');
+            const tableContainer = document.getElementById('tableContainer');
+            const gridBtn = document.getElementById('gridView');
+            const tableBtn = document.getElementById('tableView');
+
+            if (view === 'grid') {
+                gridContainer.classList.remove('d-none');
+                tableContainer.classList.add('d-none');
+                gridBtn.classList.add('active');
+                tableBtn.classList.remove('active');
+                localStorage.setItem('kpiView', 'grid');
+            } else {
+                gridContainer.classList.add('d-none');
+                tableContainer.classList.remove('d-none');
+                gridBtn.classList.remove('active');
+                tableBtn.classList.add('active');
+                localStorage.setItem('kpiView', 'table');
+            }
+
+            // Re-apply filters after switching view
+            filterData();
+        }
+
+        // Search and Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore saved view preference
+            const savedView = localStorage.getItem('kpiView') || 'grid';
+            if (savedView === 'table') {
+                switchView('table');
+            }
+
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+
+            function filterData() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const statusValue = statusFilter.value.toLowerCase();
+                let visibleGridCount = 0;
+                let visibleTableCount = 0;
+
+                // Filter Grid Cards
+                const cards = document.querySelectorAll('.kpi-card-container');
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const statusBadge = card.querySelector('.badge.bg-success, .badge.bg-danger, .badge.bg-secondary');
+                    const matchesStatus = !statusValue || (statusBadge && statusBadge.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        card.style.display = '';
+                        visibleGridCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Filter Table Rows
+                const rows = document.querySelectorAll('.kpi-row');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const statusBadge = row.querySelector('.badge.bg-success, .badge.bg-danger, .badge.bg-secondary');
+                    const matchesStatus = !statusValue || (statusBadge && statusBadge.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        row.style.display = '';
+                        visibleTableCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results messages
+                const noResultsGrid = document.getElementById('noResultsGrid');
+                const noResultsTable = document.getElementById('noResultsTable');
+
+                if (visibleGridCount === 0) {
+                    noResultsGrid.classList.remove('d-none');
+                } else {
+                    noResultsGrid.classList.add('d-none');
                 }
-    </tbody>
-</table>
+
+                if (visibleTableCount === 0) {
+                    noResultsTable.classList.remove('d-none');
+                } else {
+                    noResultsTable.classList.add('d-none');
+                }
+            }
+
+            // Make filterData globally accessible
+            window.filterData = filterData;
+
+            searchInput.addEventListener('keyup', filterData);
+            statusFilter.addEventListener('change', filterData);
+        });
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            filterData();
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .kpi-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+
+            .kpi-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+            }
+
+            .kpi-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .kpi-card h2 {
+                font-size: 2rem;
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .progress {
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+        /* View toggle buttons */
+        .btn-group .btn.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 767.98px) {
+            .kpi-card h2
+
+        {
+            font-size: 1.5rem;
+        }
+
+        }
+
+        /* Animation for cards */
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .kpi-card-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+}

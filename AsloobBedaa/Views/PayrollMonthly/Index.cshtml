@@ -3,54 +3,616 @@
     ViewData["Title"] = "Payroll Monthly";
 }
 
-<h2>Payroll Monthly</h2>
-<p>
-    <a class="btn btn-primary" asp-action="Create">
-        <i class="fas fa-plus"></i> Add New Payroll
-    </a>
-    <a class="btn btn-success" asp-action="ImportCSV">
-        <i class="fas fa-file-upload"></i> Import CSV/Excel
-    </a>
-</p>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-calendar-month"></i> Monthly Payroll
+                    </h2>
+                    <p class="text-muted mb-0">Manage monthly payroll records and expenses</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Payroll
+                    </a>
+                    <a asp-action="ImportCSV" class="btn btn-success">
+                        <i class="bi bi-file-earmark-arrow-up"></i> Import CSV/Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Month</th>
-            <th>Project Name</th>
-            <th>Employees</th>
-            <th>Basic Salary</th>
-            <th>Overtime</th>
-            <th>Allowances</th>
-            <th>Deductions</th>
-            <th>Net Cost</th>
-            <th>WPS Status</th>
-            <th>Remarks</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.PayrollId</td>
-                <td>@item.Month.ToString("MMM-yyyy")</td>
-                <td>@item.ProjectName</td>
-                <td>@item.NumberOfEmployees</td>
-                <td>@item.BasicSalary.ToString("C")</td>
-                <td>@item.Overtime.ToString("C")</td>
-                <td>@item.Allowances.ToString("C")</td>
-                <td>@item.Deductions.ToString("C")</td>
-                <td>@item.NetPayrollCost.ToString("C")</td>
-                <td>@item.WpsStatus</td>
-                <td>@item.Remarks</td>
-                <td>
-                    <a class="btn btn-sm btn-info" asp-action="Edit" asp-route-id="@item.PayrollId">Edit</a>
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.PayrollId">Delete</a>
-                    <a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@item.PayrollId">Details</a>
-                </td>
-            </tr>
+    <!-- Summary Cards -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Total Records</h6>
+                            <h4 class="mb-0" id="totalRecords">0</h4>
+                        </div>
+                        <i class="bi bi-file-text-fill" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Total Employees</h6>
+                            <h4 class="mb-0" id="totalEmployees">0</h4>
+                        </div>
+                        <i class="bi bi-people-fill" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-white-50">Total Payroll</h6>
+                            <h5 class="mb-0" id="totalPayroll">0.00</h5>
+                        </div>
+                        <i class="bi bi-cash-stack" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-dark-50">WPS Pending</h6>
+                            <h4 class="mb-0" id="wpsPending">0</h4>
+                        </div>
+                        <i class="bi bi-hourglass-split" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control border-start-0"
+                                       placeholder="Search by project name...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <select id="monthFilter" class="form-select">
+                                <option value="">All Months</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <select id="wpsFilter" class="form-select">
+                                <option value="">All WPS Status</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button type="button" class="btn btn-outline-success w-100" onclick="exportToExcel()">
+                                <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-xl-block">
+                        <table class="table table-hover mb-0" id="payrollTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Month</th>
+                                    <th>Project Name</th>
+                                    <th class="text-center">Employees</th>
+                                    <th class="text-end">Basic Salary</th>
+                                    <th class="text-end">Overtime</th>
+                                    <th class="text-end">Allowances</th>
+                                    <th class="text-end">Deductions</th>
+                                    <th class="text-end">Net Payroll Cost</th>
+                                    <th class="text-center">WPS Status</th>
+                                    <th class="text-center" width="200">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="payroll-row">
+                                        <td class="fw-semibold">@item.PayrollId</td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-calendar3"></i>
+                                                @item.Month.ToString("MMM yyyy")
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold">
+                                            <i class="bi bi-building text-primary me-1"></i>
+                                            @item.ProjectName
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-people"></i> @item.NumberOfEmployees
+                                            </span>
+                                        </td>
+                                        <td class="text-end">@item.BasicSalary.ToString("N2")</td>
+                                        <td class="text-end text-success">@item.Overtime.ToString("N2")</td>
+                                        <td class="text-end text-info">@item.Allowances.ToString("N2")</td>
+                                        <td class="text-end text-danger">@item.Deductions.ToString("N2")</td>
+                                        <td class="text-end fw-bold text-primary">@item.NetPayrollCost.ToString("N2")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(item.WpsStatus == "Completed" ? "bg-success" : item.WpsStatus == "Pending" ? "bg-warning text-dark" : "bg-info") px-3 py-2">
+                                                @item.WpsStatus
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.PayrollId"
+                                                   class="btn btn-secondary" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.PayrollId"
+                                                   class="btn btn-info text-white" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.PayrollId"
+                                                   class="btn btn-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tablet Table View -->
+                    <div class="table-responsive d-none d-lg-block d-xl-none">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Month/Project</th>
+                                    <th class="text-center">Employees</th>
+                                    <th class="text-end">Net Payroll</th>
+                                    <th class="text-center">WPS Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="payroll-row">
+                                        <td>
+                                            <div class="fw-bold">@item.ProjectName</div>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar3"></i> @item.Month.ToString("MMM yyyy")
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">@item.NumberOfEmployees</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-primary">@item.NetPayrollCost.ToString("N2")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(item.WpsStatus == "Completed" ? "bg-success" : item.WpsStatus == "Pending" ? "bg-warning text-dark" : "bg-info")">
+                                                @item.WpsStatus
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.PayrollId" class="btn btn-secondary">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.PayrollId" class="btn btn-info text-white">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.PayrollId" class="btn btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="d-lg-none">
+                        @foreach (var item in Model)
+                        {
+                            <div class="card mb-3 mx-3 mt-3 payroll-card border-start border-primary border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title mb-1 fw-bold">
+                                                <i class="bi bi-building text-primary me-1"></i>
+                                                @item.ProjectName
+                                            </h5>
+                                            <p class="text-muted mb-0 small">
+                                                <i class="bi bi-calendar3"></i> @item.Month.ToString("MMMM yyyy")
+                                            </p>
+                                        </div>
+                                        <span class="badge @(item.WpsStatus == "Completed" ? "bg-success" : item.WpsStatus == "Pending" ? "bg-warning text-dark" : "bg-info") px-3 py-2">
+                                            @item.WpsStatus
+                                        </span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                            <span class="text-muted">
+                                                <i class="bi bi-people"></i> Employees
+                                            </span>
+                                            <span class="badge bg-info fs-6">@item.NumberOfEmployees</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Basic Salary</small>
+                                            <strong>@item.BasicSalary.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Overtime</small>
+                                            <strong class="text-success">@item.Overtime.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Allowances</small>
+                                            <strong class="text-info">@item.Allowances.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Deductions</small>
+                                            <strong class="text-danger">@item.Deductions.ToString("N2")</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="border-top pt-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">Net Payroll Cost</span>
+                                            <h5 class="mb-0 fw-bold text-primary">@item.NetPayrollCost.ToString("N2")</h5>
+                                        </div>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(item.Remarks))
+                                    {
+                                        <div class="alert alert-info py-2 mb-3">
+                                            <small><i class="bi bi-info-circle"></i> @item.Remarks</small>
+                                        </div>
+                                    }
+
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.PayrollId"
+                                           class="btn btn-sm btn-secondary flex-fill">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.PayrollId"
+                                           class="btn btn-sm btn-info text-white flex-fill">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.PayrollId"
+                                           class="btn btn-sm btn-danger flex-fill">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="text-center py-5 d-none">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">No payroll records found matching your criteria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Populate month filter from data
+        function populateMonthFilter() {
+            const monthFilter = document.getElementById('monthFilter');
+            const months = new Set();
+
+            document.querySelectorAll('.payroll-row').forEach(row => {
+                const monthBadge = row.querySelector('.badge.bg-secondary');
+                if (monthBadge) {
+                    months.add(monthBadge.textContent.trim());
+                }
+            });
+
+            // Sort months
+            const sortedMonths = Array.from(months).sort((a, b) => {
+                const dateA = new Date(a.replace(/[^\w\s]/gi, ' '));
+                const dateB = new Date(b.replace(/[^\w\s]/gi, ' '));
+                return dateB - dateA; // Descending order
+            });
+
+            sortedMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                monthFilter.appendChild(option);
+            });
         }
-    </tbody>
-</table>
+
+        // Calculate and update summary cards
+        function updateSummaryCards() {
+            const rows = document.querySelectorAll('.payroll-row');
+            const cards = document.querySelectorAll('.payroll-card');
+            let totalRecords = 0;
+            let totalEmployees = 0;
+            let totalPayroll = 0;
+            let wpsPending = 0;
+
+            // Count from table rows (desktop/tablet)
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    totalRecords++;
+
+                    // Employees
+                    const empBadge = row.querySelector('.badge.bg-info');
+                    if (empBadge) {
+                        const empCount = parseInt(empBadge.textContent.trim().replace(/\D/g, ''));
+                        if (!isNaN(empCount)) {
+                            totalEmployees += empCount;
+                        }
+                    }
+
+                    // Net Payroll (different column position for desktop vs tablet)
+                    const cells = row.querySelectorAll('td');
+                    let netPayrollCell;
+                    if (cells.length > 10) {
+                        // Desktop view
+                        netPayrollCell = cells[8];
+                    } else {
+                        // Tablet view
+                        netPayrollCell = cells[2];
+                    }
+
+                    if (netPayrollCell) {
+                        const value = parseFloat(netPayrollCell.textContent.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            totalPayroll += value;
+                        }
+                    }
+
+                    // WPS Pending
+                    const wpsBadge = row.querySelector('.badge.bg-warning');
+                    if (wpsBadge && wpsBadge.textContent.includes('Pending')) {
+                        wpsPending++;
+                    }
+                }
+            });
+
+            // Count from cards (mobile)
+            cards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    totalRecords++;
+
+                    // Employees
+                    const empBadge = card.querySelector('.badge.bg-info.fs-6');
+                    if (empBadge) {
+                        const empCount = parseInt(empBadge.textContent.trim());
+                        if (!isNaN(empCount)) {
+                            totalEmployees += empCount;
+                        }
+                    }
+
+                    // Net Payroll
+                    const netPayrollElement = card.querySelector('.text-primary.fw-bold.h5');
+                    if (netPayrollElement) {
+                        const value = parseFloat(netPayrollElement.textContent.replace(/,/g, ''));
+                        if (!isNaN(value)) {
+                            totalPayroll += value;
+                        }
+                    }
+
+                    // WPS Pending
+                    const wpsBadge = card.querySelector('.badge.bg-warning');
+                    if (wpsBadge && wpsBadge.textContent.includes('Pending')) {
+                        wpsPending++;
+                    }
+                }
+            });
+
+            document.getElementById('totalRecords').textContent = totalRecords;
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            document.getElementById('wpsPending').textContent = wpsPending;
+            document.getElementById('totalPayroll').textContent = totalPayroll.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Search and Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            populateMonthFilter();
+            updateSummaryCards();
+
+            const searchInput = document.getElementById('searchInput');
+            const monthFilter = document.getElementById('monthFilter');
+            const wpsFilter = document.getElementById('wpsFilter');
+            const tableRows = document.querySelectorAll('.payroll-row');
+            const cards = document.querySelectorAll('.payroll-card');
+            const noResults = document.getElementById('noResults');
+
+            function filterData() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const monthValue = monthFilter.value.toLowerCase();
+                const wpsValue = wpsFilter.value.toLowerCase();
+                let visibleCount = 0;
+
+                // Filter table rows (desktop/tablet)
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const monthBadge = row.querySelector('.badge.bg-secondary');
+                    const matchesMonth = !monthValue || (monthBadge && monthBadge.textContent.toLowerCase().includes(monthValue));
+
+                    const wpsBadges = row.querySelectorAll('.badge');
+                    let matchesWps = !wpsValue;
+                    wpsBadges.forEach(badge => {
+                        const badgeText = badge.textContent.toLowerCase();
+                        if (badgeText.includes('completed') || badgeText.includes('pending') || badgeText.includes('processing')) {
+                            matchesWps = !wpsValue || badgeText.includes(wpsValue);
+                        }
+                    });
+
+                    if (matchesSearch && matchesMonth && matchesWps) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filter cards (mobile)
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    const matchesMonth = !monthValue || text.includes(monthValue);
+
+                    const wpsBadge = card.querySelector('.badge.bg-success, .badge.bg-warning, .badge.bg-info');
+                    const matchesWps = !wpsValue || (wpsBadge && wpsBadge.textContent.toLowerCase().includes(wpsValue));
+
+                    if (matchesSearch && matchesMonth && matchesWps) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+
+                // Update summary cards
+                updateSummaryCards();
+            }
+
+            searchInput.addEventListener('keyup', filterData);
+            monthFilter.addEventListener('change', filterData);
+            wpsFilter.addEventListener('change', filterData);
+        });
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('monthFilter').value = '';
+            document.getElementById('wpsFilter').value = '';
+            document.querySelectorAll('.payroll-row, .payroll-card').forEach(el => {
+                el.style.display = '';
+            });
+            document.getElementById('noResults').classList.add('d-none');
+            updateSummaryCards();
+        }
+
+        function exportToExcel() {
+            // Placeholder for Excel export functionality
+            alert('Export to Excel functionality will be implemented here.');
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .payroll-card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Summary card styling */
+        .bg-success, .bg-warning, .bg-danger, .bg-info, .bg-primary {
+            background: linear-gradient(135deg, var(--bs-bg-opacity, 1) 0%, rgba(255,255,255,0.15) 100%);
+        }
+
+        @@media (max-width: 991.98px) {
+            .payroll-card
+
+        {
+            margin-left: 1rem !important;
+            margin-right: 1rem !important;
+        }
+
+        }
+
+        /* Mobile optimization */
+        @@media (max-width: 575.98px) {
+            .payroll-card
+
+        {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
+        }
+
+        }
+    </style>
+}

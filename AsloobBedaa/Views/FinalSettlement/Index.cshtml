@@ -1,53 +1,305 @@
 ﻿@model IEnumerable<FinalSettlement>
-
 @{
     ViewData["Title"] = "Final Settlements";
 }
 
-<h2 class="mb-3">Final Settlements</h2>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-cash-coin"></i> Final Settlements
+                    </h2>
+                    <p class="text-muted mb-0">Manage employee final settlement records</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add New Settlement
+                </a>
+            </div>
+        </div>
+    </div>
 
-<a asp-action="Create" class="btn btn-primary mb-3">➕ Add Settlement</a>
+    <!-- Search and Filter Section -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control border-start-0"
+                                       placeholder="Search by employee name, ID, or project...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <select id="statusFilter" class="form-select">
+                                <option value="">All Payment Status</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Employee Name</th>
-            <th>Employee ID</th>
-            <th>Project</th>
-            <th>Last Working Day</th>
-            <th>Pending Salary</th>
-            <th>Leave Salary</th>
-            <th>Gratuity</th>
-            <th>Deductions</th>
-            <th>Net Settlement</th>
-            <th>Payment Status</th>
-            <th width="180">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.EmployeeName</td>
-                <td>@item.EmployeeId</td>
-                <td>@item.ProjectName</td>
-                <td>@item.LastWorkingDay.ToShortDateString()</td>
-                <td>@item.PendingSalary</td>
-                <td>@item.LeaveSalary</td>
-                <td>@item.Gratuity</td>
-                <td>@item.Deductions</td>
-                <td>@item.NetSettlementAmount</td>
-                <td>
-                    <span class="badge @(item.PaymentStatus == "Paid" ? "bg-success" : "bg-warning")">
-                        @item.PaymentStatus
-                    </span>
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.SettlementId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.SettlementId" class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.SettlementId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
+    <!-- Table Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-lg-block">
+                        <table class="table table-hover mb-0" id="settlementsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Employee Name</th>
+                                    <th>Employee ID</th>
+                                    <th>Project</th>
+                                    <th>Last Working Day</th>
+                                    <th class="text-end">Pending Salary</th>
+                                    <th class="text-end">Leave Salary</th>
+                                    <th class="text-end">Gratuity</th>
+                                    <th class="text-end">Deductions</th>
+                                    <th class="text-end">Net Settlement</th>
+                                    <th class="text-center">Payment Status</th>
+                                    <th class="text-center" width="200">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="settlement-row">
+                                        <td class="fw-semibold">@item.EmployeeName</td>
+                                        <td>@item.EmployeeId</td>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.LastWorkingDay.ToString("dd MMM yyyy")</td>
+                                        <td class="text-end">@item.PendingSalary.ToString("N2")</td>
+                                        <td class="text-end">@item.LeaveSalary.ToString("N2")</td>
+                                        <td class="text-end">@item.Gratuity.ToString("N2")</td>
+                                        <td class="text-end text-danger">@item.Deductions.ToString("N2")</td>
+                                        <td class="text-end fw-bold text-success">@item.NetSettlementAmount.ToString("N2")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(item.PaymentStatus == "Paid" ? "bg-success" : "bg-warning text-dark") px-3 py-2">
+                                                @item.PaymentStatus
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.SettlementId"
+                                                   class="btn btn-info text-white" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.SettlementId"
+                                                   class="btn btn-warning" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.SettlementId"
+                                                   class="btn btn-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile/Tablet Card View -->
+                    <div class="d-lg-none">
+                        @foreach (var item in Model)
+                        {
+                            <div class="card mb-3 mx-3 mt-3 settlement-card border-start border-primary border-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title mb-1 fw-bold">@item.EmployeeName</h5>
+                                            <p class="text-muted mb-0 small">ID: @item.EmployeeId</p>
+                                        </div>
+                                        <span class="badge @(item.PaymentStatus == "Paid" ? "bg-success" : "bg-warning text-dark") px-3 py-2">
+                                            @item.PaymentStatus
+                                        </span>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Project</small>
+                                            <strong>@item.ProjectName</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Last Working Day</small>
+                                            <strong>@item.LastWorkingDay.ToString("dd MMM yyyy")</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Pending Salary</small>
+                                            <strong>@item.PendingSalary.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Leave Salary</small>
+                                            <strong>@item.LeaveSalary.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Gratuity</small>
+                                            <strong>@item.Gratuity.ToString("N2")</strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted d-block">Deductions</small>
+                                            <strong class="text-danger">@item.Deductions.ToString("N2")</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="border-top pt-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">Net Settlement Amount</span>
+                                            <h5 class="mb-0 text-success fw-bold">@item.NetSettlementAmount.ToString("N2")</h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.SettlementId"
+                                           class="btn btn-sm btn-info text-white flex-fill">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.SettlementId"
+                                           class="btn btn-sm btn-warning flex-fill">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.SettlementId"
+                                           class="btn btn-sm btn-danger flex-fill">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="text-center py-5 d-none">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">No settlements found matching your criteria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search and Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const tableRows = document.querySelectorAll('.settlement-row');
+            const cards = document.querySelectorAll('.settlement-card');
+            const noResults = document.getElementById('noResults');
+
+            function filterData() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const statusValue = statusFilter.value.toLowerCase();
+                let visibleCount = 0;
+
+                // Filter table rows (desktop)
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+                    const statusCell = row.querySelector('.badge');
+                    const matchesStatus = !statusValue || (statusCell && statusCell.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filter cards (mobile)
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+                    const statusBadge = card.querySelector('.badge');
+                    const matchesStatus = !statusValue || (statusBadge && statusBadge.textContent.toLowerCase().includes(statusValue));
+
+                    if (matchesSearch && matchesStatus) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+            }
+
+            searchInput.addEventListener('keyup', filterData);
+            statusFilter.addEventListener('change', filterData);
+        });
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.querySelectorAll('.settlement-row, .settlement-card').forEach(el => {
+                el.style.display = '';
+            });
+            document.getElementById('noResults').classList.add('d-none');
         }
-    </tbody>
-</table>
+    </script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        @@media (max-width: 991.98px) {
+            .settlement-card {
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+}
